@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   CASTCHECK design system
+   --------------------------------------------------------------------------- */
+:root {
+  --bg: #f7f8fb;
+  --surface: #ffffff;
+  --surface-2: #f1f3f9;
+  --border: #e2e6ef;
+  --border-strong: #cbd2e1;
+  --foreground: #131722;
+  --muted: #5b6478;
+  --muted-2: #8a92a6;
+
+  --primary: #3b4ee0;
+  --primary-hover: #3140c4;
+  --primary-fg: #ffffff;
+  --primary-soft: #eaecfd;
+
+  --accent: #0ea5a5;
+  --accent-soft: #e0f5f4;
+
+  /* Status */
+  --success: #17864f;
+  --success-soft: #e2f5ea;
+  --warning: #b7791f;
+  --warning-soft: #fcf1dd;
+  --danger: #c0392b;
+  --danger-soft: #fbe6e3;
+  --info: #2563a8;
+  --info-soft: #e4eefb;
+  --neutral: #64748b;
+  --neutral-soft: #eef1f6;
+
+  --ring: #3b4ee0;
+  --radius: 0.75rem;
+}
+
+[data-theme="dark"] {
+  --bg: #0b0e16;
+  --surface: #141926;
+  --surface-2: #1c2331;
+  --border: #262f42;
+  --border-strong: #38445f;
+  --foreground: #e7 eaf2;
+  --foreground: #e7eaf2;
+  --muted: #9aa4ba;
+  --muted-2: #6b7690;
+
+  --primary: #6c7cf5;
+  --primary-hover: #808ef7;
+  --primary-fg: #0b0e16;
+  --primary-soft: #1e2544;
+
+  --accent: #2dd4cf;
+  --accent-soft: #113536;
+
+  --success: #4ade80;
+  --success-soft: #10261a;
+  --warning: #fbbf46;
+  --warning-soft: #2a2010;
+  --danger: #f87171;
+  --danger-soft: #2c1414;
+  --info: #7cb2f0;
+  --info-soft: #10233a;
+  --neutral: #94a3b8;
+  --neutral-soft: #1a2130;
+
+  --ring: #6c7cf5;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-fg: var(--primary-fg);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-neutral: var(--neutral);
+  --color-neutral-soft: var(--neutral-soft);
+
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--primary-soft);
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* Subtle grid backdrop for hero sections */
+.hero-grid {
+  background-image:
+    radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up { animation: fade-up 0.4s ease both; }

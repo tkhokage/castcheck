@@ -1,0 +1,323 @@
+// CASTCHECK data model — covers all phases (MVP → Real data).
+// Local preview uses SQLite; swap `provider` to "postgresql" for production.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Identity, access, audit  (Phase 4)
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  // actor | casting | agency | moderator | support | grc | admin
+  role         String   @default("actor")
+  mfaEnabled   Boolean  @default(false)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile      ActorProfile?
+  saved        SavedOpportunity[]
+  applications Application[]
+  reports      Report[]
+  tickets      Ticket[]           @relation("ticketOwner")
+  assigned     Ticket[]           @relation("ticketAnalyst")
+  createdOpps  Opportunity[]      @relation("oppCreator")
+  auditLogs    AuditLog[]
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  action    String
+  resource  String?
+  result    String   @default("success")
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([action])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Actor profile  (Phase 1) — no highly-sensitive fields, ever.
+// ---------------------------------------------------------------------------
+
+model ActorProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  displayName        String
+  professionalEmail  String?
+  professionalPhone  String?
+  location           String?
+  headshotUrl        String?
+  resumeUrl          String?
+  demoReelUrl        String?
+  bio                String?
+
+  credits            Json?    // [{title, role, production, year}]
+  skills             Json?    // string[]
+  specialSkills      Json?    // string[]
+  training           Json?    // string[]
+  languages          Json?    // string[]
+  links              Json?    // [{label, url}]
+
+  // Career goals / matching inputs
+  experienceLevel    String?  // beginner | emerging | experienced | professional
+  careerGoals        String?
+  preferredMediums   Json?    // string[]  film, television, ...
+  desiredMarkets     Json?    // string[]  Dallas/Fort Worth, ...
+  roleTypes          Json?    // string[]  lead, supporting, ...
+  compensationPref   String?  // paid | any | ...
+  productionTypePref Json?    // string[]
+  availability       String?
+  willingToTravel    Boolean  @default(false)
+  representationGoals String?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Opportunities  (Phase 1 core, Phase 2 trust)
+// ---------------------------------------------------------------------------
+
+model Opportunity {
+  id                 String   @id @default(cuid())
+
+  title              String
+  production         String?
+  productionCompany  String?
+  castingEntity      String?
+  role               String
+  roleType           String   // lead | supporting | featured | day player | background | ensemble | voice
+  type               String   // film | television | theater | commercial | indie | short | student | web series | voice | background | music video | other
+  location           String
+  productionType     String?  // studio | independent | student | nonprofit | community | experimental | other
+  experienceLevel    String?  // beginner | emerging | experienced | professional
+
+  compensation       String   // paid | unpaid | deferred | expenses | unknown
+  payDetails         String?
+  unionStatus        String?
+
+  description        String?
+  submissionMethod   String?
+  submissionRequirements Json? // string[]
+  deadline           DateTime?
+  contactName        String?
+  contactEmail       String?
+  contactPhone       String?
+  source             String?
+  sourceUrl          String?
+
+  // Trust & verification (Phase 2)
+  verificationState  String   @default("needs_review") // verified | partial | needs_review | flagged | high_risk | rejected
+  trustLevel         Int      @default(1)              // 1..4
+  riskLikelihood     Int      @default(2)              // 1..5
+  riskImpact         Int      @default(2)              // 1..5
+  riskLevel          String   @default("low")          // low | moderate | high | critical
+  lastVerifiedAt     DateTime?
+
+  status             String   @default("published")    // published | flagged | rejected | draft
+  isDemo             Boolean  @default(true)
+
+  createdById        String?
+  createdBy          User?    @relation("oppCreator", fields: [createdById], references: [id])
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  checks             VerificationCheck[]
+  riskIndicators     RiskIndicator[]
+  saved              SavedOpportunity[]
+  applications       Application[]
+  reports            Report[]
+
+  @@index([type])
+  @@index([location])
+  @@index([verificationState])
+}
+
+model VerificationCheck {
+  id            String      @id @default(cuid())
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  key           String      // production_company | casting_contact | official_website | submission_method | compensation_details | contact_info | personal_info
+  label         String
+  status        String      // pass | warn | fail | pending
+  note          String?
+  createdAt     DateTime    @default(now())
+}
+
+model RiskIndicator {
+  id            String      @id @default(cuid())
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  category      String      // financial | identity | communication | information | quality
+  code          String
+  description   String
+  severity      String      // low | medium | high
+}
+
+model SavedOpportunity {
+  id            String      @id @default(cuid())
+  userId        String
+  opportunityId String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now())
+
+  @@unique([userId, opportunityId])
+}
+
+model Application {
+  id                String      @id @default(cuid())
+  userId            String
+  opportunityId     String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunity       Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  status            String      @default("saved") // saved|planning|applied|submitted|audition_scheduled|callback|offer|booked|rejected|withdrawn|expired
+  submissionDate    DateTime?
+  deadline          DateTime?
+  auditionDate      DateTime?
+  contact           String?
+  notes             String?
+  materialsSubmitted Json?      // string[]
+  followUpDate      DateTime?
+
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  @@unique([userId, opportunityId])
+}
+
+// ---------------------------------------------------------------------------
+// Agencies  (Phase 2)
+// ---------------------------------------------------------------------------
+
+model Agency {
+  id                     String   @id @default(cuid())
+  name                   String
+  location               String
+  website                String?
+  contactEmail           String?
+  contactPhone           String?
+
+  representationSpecialties Json? // string[]  film/tv, commercial, theater, voice, ...
+  marketsServed          Json?    // string[]
+  submissionMethod       String?  // open | referral | closed
+  submissionRequirements Json?    // string[]
+  commission             String?
+  fees                   String?  // fee policy / disclosure
+  careerLevel            Json?    // string[]  emerging | experienced | ...
+  specialties            Json?    // string[]
+  businessInfo           String?
+
+  verificationState      String   @default("needs_review")
+  trustLevel             Int      @default(1)
+  lastVerifiedAt         DateTime?
+  isDemo                 Boolean  @default(true)
+
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([location])
+}
+
+// ---------------------------------------------------------------------------
+// Trust & safety reports  (Phase 2) → tickets  (Phase 3)
+// ---------------------------------------------------------------------------
+
+model Report {
+  id            String      @id @default(cuid())
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  userId        String?
+  user          User?       @relation(fields: [userId], references: [id])
+  reason        String
+  details       String?
+  status        String      @default("open") // open | reviewing | resolved | dismissed
+  createdAt     DateTime    @default(now())
+}
+
+model Ticket {
+  id             String    @id @default(cuid())
+  userId         String?
+  user           User?     @relation("ticketOwner", fields: [userId], references: [id])
+  category       String
+  priority       String    @default("medium") // low | medium | high | critical
+  status         String    @default("open")   // open | in_progress | waiting | resolved | closed
+  subject        String
+  description    String?
+  evidence       Json?
+  internalNotes  String?
+  resolution     String?
+  assignedId     String?
+  assigned       User?     @relation("ticketAnalyst", fields: [assignedId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  closedAt       DateTime?
+}
+
+// ---------------------------------------------------------------------------
+// Knowledge base  (Phase 3)
+// ---------------------------------------------------------------------------
+
+model KnowledgeArticle {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  category  String
+  summary   String
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// GRC  (Phase 4)
+// ---------------------------------------------------------------------------
+
+model RiskRegisterEntry {
+  id          String @id @default(cuid())
+  risk        String
+  asset       String?
+  threat      String?
+  vulnerability String?
+  likelihood  Int
+  impact      Int
+  control     String
+  residual    Int
+  owner       String
+  status      String @default("active")
+}
+
+model Incident {
+  id             String    @id @default(cuid())
+  reference      String    @unique
+  category       String
+  severity       String
+  affectedAssets String?
+  summary        String
+  evidence       String?
+  parties        String?
+  immediateActions String?
+  recommendedActions String?
+  status         String    @default("open")
+  lessonsLearned String?
+  createdAt      DateTime  @default(now())
+}
