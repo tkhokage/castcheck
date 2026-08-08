@@ -7,6 +7,9 @@ export default defineConfig({
     include: ["src/**/*.test.ts"],
   },
   resolve: {
-    alias: { "@": path.join(__dirname, "src") },
+    alias: {
+      "@": path.join(__dirname, "src"),
+      "server-only": path.join(__dirname, "src/test/server-only-stub.ts"),
+    },
   },
 });

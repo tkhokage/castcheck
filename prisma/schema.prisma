@@ -22,7 +22,10 @@ model User {
   // actor | casting | agency | moderator | support | grc | admin
   role         String   @default("actor")
   mfaEnabled   Boolean  @default(false)
-  active       Boolean  @default(true)
+  mfaSecret    String?
+  emailVerified DateTime?
+  verifyToken  String?
+  active        Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

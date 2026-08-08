@@ -62,7 +62,7 @@ export async function Nav() {
           {session ? (
             <div className="flex items-center gap-2">
               <Link
-                href="/profile"
+                href="/settings"
                 className="hidden rounded-lg px-3 py-2 text-right sm:block"
               >
                 <span className="block text-sm font-semibold leading-tight">{session.name}</span>

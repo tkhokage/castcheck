@@ -5,6 +5,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { audit } from "@/lib/audit";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function toggleSave(opportunityId: string) {
   const session = await getSession();
@@ -102,6 +103,9 @@ export async function submitReport(_prev: unknown, formData: FormData) {
     details: formData.get("details") || undefined,
   });
   if (!parsed.success) return { error: "Choose a reason." };
+
+  const limit = rateLimit(`report:${session?.id ?? parsed.data.opportunityId}`, 10, 60 * 60_000);
+  if (!limit.ok) return { error: `Too many reports. Try again in ${limit.retryAfterSec}s.` };
 
   await db.report.create({
     data: {

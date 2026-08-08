@@ -4,11 +4,12 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { login, register, type AuthState } from "@/app/actions/auth";
 import { Button, Field, inputClass } from "@/components/ui";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ShieldCheck } from "lucide-react";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const action = mode === "login" ? login : register;
   const [state, formAction, pending] = useActionState<AuthState, FormData>(action, undefined);
+  const mfa = mode === "login" && state?.mfaRequired;
 
   return (
     <form action={formAction} className="space-y-4">
@@ -16,6 +17,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         <div className="flex items-center gap-2 rounded-lg border border-danger/30 bg-danger-soft px-3 py-2 text-sm text-danger">
           <AlertCircle className="h-4 w-4 shrink-0" />
           {state.error}
+        </div>
+      )}
+
+      {mfa && (
+        <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary-soft px-3 py-2 text-sm text-primary">
+          <ShieldCheck className="h-4 w-4 shrink-0" />
+          Two-factor is enabled. Enter the code from your authenticator app.
         </div>
       )}
 
@@ -40,6 +48,22 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         />
       </Field>
 
+      {mfa && (
+        <Field label="Authentication code">
+          <input
+            name="code"
+            inputMode="numeric"
+            pattern="\d{6}"
+            maxLength={6}
+            required
+            autoFocus
+            className={`${inputClass} font-mono tracking-widest`}
+            placeholder="000000"
+            autoComplete="one-time-code"
+          />
+        </Field>
+      )}
+
       {mode === "register" && (
         <Field label="I am a…">
           <select name="role" className={inputClass} defaultValue="actor">
@@ -51,7 +75,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       )}
 
       <Button type="submit" disabled={pending} className="w-full">
-        {pending ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
+        {pending ? "Please wait…" : mfa ? "Verify & sign in" : mode === "login" ? "Sign in" : "Create account"}
       </Button>
 
       <p className="text-center text-sm text-muted">
