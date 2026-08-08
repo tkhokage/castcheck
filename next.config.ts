@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 import path from "node:path";
 
 const nextConfig: NextConfig = {
+  // Emit a self-contained server bundle for Docker/VPS production images.
+  output: "standalone",
   // Pin the workspace root so Turbopack ignores the stray lockfile in the home dir.
   turbopack: {
     root: path.join(__dirname),

@@ -156,16 +156,25 @@ live until it genuinely is. See [`docs/roadmap.md`](docs/roadmap.md).
 | [ai-limitations.md](docs/ai-limitations.md) | What the AI does and never does |
 | [roadmap.md](docs/roadmap.md) | Phases 1–6 |
 | [testing.md](docs/testing.md) | How this build was verified |
+| [deployment.md](docs/deployment.md) | Docker, Vercel, and VPS deploy paths |
 
 ---
 
 ## Deploying to production
 
-1. Provision Postgres and set `DATABASE_URL`.
-2. Change the datasource `provider` in `prisma/schema.prisma` to `postgresql`.
-3. Set a strong random `AUTH_SECRET`.
-4. `npx prisma migrate deploy` (or `prisma db push`), then seed if desired.
-5. Deploy to any Node host (Vercel recommended): `npm run build && npm start`.
+Local dev uses SQLite; **production uses PostgreSQL**. The production build
+(`output: "standalone"`) and runtime are verified, and there's a health probe at
+`GET /api/health`. Three ready-to-use paths — full detail in
+[`docs/deployment.md`](docs/deployment.md):
+
+- **Docker Compose** (app + Postgres + migrations): `docker compose up --build`.
+- **Vercel** (managed live URL): link the project, set `DATABASE_URL` /
+  `AUTH_SECRET`, `npm run db:use:postgres`, `prisma migrate deploy`, `vercel --prod`.
+- **Any Node host / VPS**: `npm run db:use:postgres && prisma migrate deploy && npm run build && npm start`.
+
+`npm run db:use:postgres` / `db:use:sqlite` switch the Prisma datasource
+provider; a Postgres init migration is committed under `prisma/migrations`. CI
+(`.github/workflows/ci.yml`) runs the tests and build on every push/PR.
 
 ---
 

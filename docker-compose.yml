@@ -1,0 +1,48 @@
+# Full production stack: PostgreSQL + migrations + the standalone Next server.
+#   docker compose up --build
+# Then open http://localhost:3000  (health: /api/health)
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: castcheck
+      POSTGRES_PASSWORD: castcheck
+      POSTGRES_DB: castcheck
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U castcheck"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    build:
+      context: .
+      target: migrator
+    environment:
+      DATABASE_URL: postgresql://castcheck:castcheck@db:5432/castcheck?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      target: runner
+    environment:
+      DATABASE_URL: postgresql://castcheck:castcheck@db:5432/castcheck?schema=public
+      AUTH_SECRET: ${AUTH_SECRET:-change-me-in-production}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pgdata:

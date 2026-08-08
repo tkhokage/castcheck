@@ -10,6 +10,9 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "db:use:postgres": "node scripts/set-db-provider.mjs postgresql",
+    "db:use:sqlite": "node scripts/set-db-provider.mjs sqlite",
+    "db:migrate:deploy": "prisma migrate deploy",
     "test": "vitest run",
     "test:watch": "vitest"
   },
