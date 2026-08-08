@@ -35,10 +35,19 @@ are never definitive proof. Until a source is genuinely live, data is labeled
 - **AI & digital likeness** — flag training, replica, voice-cloning, and
   synthetic-performance language.
 
-## Production hardening backlog
+## Production hardening
 
-- Enforce rate limiting and email verification.
-- Enable MFA.
-- Migrate to Postgres + `prisma migrate deploy`.
-- File upload storage + validation for headshots/reels/self-tapes.
-- Automated test suite (unit for `lib/*`, e2e for critical flows).
+Done in this build:
+
+- ✅ Rate limiting on login, registration, and reports.
+- ✅ Email verification (token flow + `/verify`).
+- ✅ TOTP multi-factor authentication (enroll, enforce, disable).
+- ✅ File upload storage + type/size validation for headshots, resumes, reels.
+- ✅ Automated unit suite for `lib/*` (36 tests, incl. RFC 6238 TOTP vector).
+
+Still open:
+
+- Migrate to Postgres + `prisma migrate deploy` and object storage for uploads.
+- Back the rate limiter with Redis for multi-instance deployments.
+- Wire a real email provider for verification + notifications.
+- End-to-end tests (Playwright) for the critical journeys.

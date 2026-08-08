@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { ProfileForm } from "./profile-form";
+import { Uploader } from "./uploader";
 import { DATA_TIERS } from "@/lib/constants";
 import { Card } from "@/components/ui";
 import { ShieldCheck } from "lucide-react";
@@ -32,6 +33,19 @@ export default async function ProfilePage() {
           </div>
         </div>
       </Card>
+
+      <div className="mt-8">
+        <h2 className="mb-3 font-semibold">Materials</h2>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Uploader kind="headshot" currentUrl={user.profile?.headshotUrl} />
+          <Uploader kind="resume" currentUrl={user.profile?.resumeUrl} />
+          <Uploader kind="reel" currentUrl={user.profile?.demoReelUrl} />
+        </div>
+        <p className="mt-2 text-xs text-muted">
+          Only public-tier materials (headshot, resume, demo reel) are uploaded. Files are validated by type
+          and size.
+        </p>
+      </div>
 
       <div className="mt-8">
         <ProfileForm profile={user.profile as never} email={user.email} />

@@ -2,8 +2,12 @@
 
 ## How this build was verified
 
+- **Unit tests** — `npm test` runs a 36-test Vitest suite over the domain logic:
+  risk scoring/verification derivation, opportunity screening, career-fit and
+  agency matching, RBAC, the TOTP implementation (validated against the RFC 6238
+  reference vector), and file-upload validation + write path.
 - **Production build** — `npm run build` compiles cleanly: TypeScript passes and
-  all 21 routes build with no errors.
+  all routes build with no errors.
 - **Manual E2E in a browser** across roles:
   - Landing, Discover (filters + search), and opportunity detail render with
     live seed data.
@@ -19,19 +23,23 @@
 - **Domain logic spot-check** — `screen.ts` was exercised on scam text and
   produced the expected 7 indicators and a high-risk/flagged recommendation.
 
-## Suggested automated test suite (backlog)
+## Unit test coverage (implemented)
 
-Pure domain logic in `src/lib` is the highest-value, easiest target:
+Run with `npm test`. Pure domain logic in `src/lib`:
 
-- `risk.ts` — `riskLevel` thresholds; `deriveVerificationState` transitions.
-- `matching.ts` — `careerFit` / `agencyMatch` scoring and that risk is never
-  folded into fit.
-- `screen.ts` — each scam pattern fires; severity aggregation and suggested
+- `risk.test.ts` — `riskLevel` thresholds; `deriveVerificationState` transitions.
+- `matching.test.ts` — `careerFit` / `agencyMatch` scoring; risk is never folded
+  into fit.
+- `screen.test.ts` — each scam pattern fires; severity aggregation + suggested
   state/status.
+- `rbac.test.ts` — capability checks per role.
+- `totp.test.ts` — RFC 6238 reference vector, drift window, malformed input.
+- `upload.test.ts` — MIME/size rejection and the successful write path.
 
-Recommended tooling: **Vitest** for unit tests, **Playwright** for the critical
-user journeys (register → profile → discover → track; report → ticket;
-moderation decision).
+## Next: end-to-end (backlog)
+
+**Playwright** for the critical journeys: register → profile → discover → track;
+report → ticket; moderation decision; MFA enroll → sign-in.
 
 ## Manual regression checklist
 

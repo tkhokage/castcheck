@@ -43,3 +43,6 @@ next-env.d.ts
 # prisma local database
 prisma/*.db
 prisma/*.db-journal
+
+# user-uploaded media (local storage)
+/public/uploads/

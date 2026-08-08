@@ -25,9 +25,7 @@ export async function saveProfile(_prev: unknown, formData: FormData) {
     professionalPhone: String(formData.get("professionalPhone") || "") || null,
     location: String(formData.get("location") || "") || null,
     bio: String(formData.get("bio") || "") || null,
-    headshotUrl: String(formData.get("headshotUrl") || "") || null,
-    resumeUrl: String(formData.get("resumeUrl") || "") || null,
-    demoReelUrl: String(formData.get("demoReelUrl") || "") || null,
+    // headshotUrl / resumeUrl / demoReelUrl are owned by the Uploader (actions/upload.ts).
     experienceLevel: String(formData.get("experienceLevel") || "") || null,
     careerGoals: String(formData.get("careerGoals") || "") || null,
     compensationPref: String(formData.get("compensationPref") || "") || null,

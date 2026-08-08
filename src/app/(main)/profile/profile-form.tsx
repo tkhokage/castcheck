@@ -53,13 +53,8 @@ export function ProfileForm({ profile, email }: { profile: ProfileData; email: s
       </Card>
 
       <Card className="p-5">
-        <h2 className="mb-4 font-semibold">Materials</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Headshot URL"><input name="headshotUrl" defaultValue={val("headshotUrl")} className={inputClass} /></Field>
-          <Field label="Resume URL"><input name="resumeUrl" defaultValue={val("resumeUrl")} className={inputClass} /></Field>
-          <Field label="Demo reel URL"><input name="demoReelUrl" defaultValue={val("demoReelUrl")} className={inputClass} /></Field>
-        </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <h2 className="mb-4 font-semibold">Skills & training</h2>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Skills" hint="Comma-separated"><input name="skills" defaultValue={list("skills").join(", ")} className={inputClass} placeholder="Improv, Stage combat" /></Field>
           <Field label="Special skills" hint="Comma-separated"><input name="specialSkills" defaultValue={list("specialSkills").join(", ")} className={inputClass} placeholder="Valid passport, Driver's license" /></Field>
           <Field label="Training" hint="Comma-separated"><input name="training" defaultValue={list("training").join(", ")} className={inputClass} /></Field>

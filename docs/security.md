@@ -12,8 +12,28 @@ information is stored.
   **httpOnly, SameSite=Lax** cookie, `Secure` in production, 7-day expiry.
 - The session payload carries only `id`, `email`, `name`, `role` — never
   secrets.
-- **MFA-ready:** the `User.mfaEnabled` flag and a session seam exist so a second
-  factor can be inserted at sign-in without reworking the model.
+- **Multi-factor authentication (TOTP):** RFC 6238 time-based one-time passwords
+  (`src/lib/totp.ts`, Node-crypto implementation, verified against the RFC test
+  vector). Users enroll from Account & Security (QR + manual key), sign-in
+  enforces the second factor, and disabling requires a valid code. All three
+  transitions are audit-logged.
+- **Email verification:** registration issues a verification token; the `/verify`
+  flow marks the address verified. (This build has no email provider, so the link
+  is surfaced in-app for the demo.)
+
+## Rate limiting
+
+- A fixed-window limiter (`src/lib/rate-limit.ts`) throttles **login** (5 / 15
+  min per email), **registration** (5 / hr), and **reports** (10 / hr). Rate-
+  limited sign-ins are audit-logged. Swap the in-memory store for Redis to scale
+  across instances.
+
+## File handling
+
+- Profile media uploads (headshot, resume, demo reel — all *public* tier) are
+  validated by MIME type and size before being written (`src/lib/upload.ts`).
+  Server Action body size is capped at 12 MB. In production, swap local storage
+  for object storage behind the same interface.
 
 ## Authorization (RBAC)
 
@@ -56,8 +76,10 @@ information is stored.
 
 ## Known limitations (demo build)
 
-- Rate limiting and email verification are architectural placeholders, not yet
-  enforced.
 - `AUTH_SECRET` ships with a dev default — set a strong random value in
   production.
-- MFA is architecturally ready but not enabled.
+- Email verification generates real tokens but "delivers" the link in-app (no
+  email provider wired up).
+- The rate limiter is in-memory (single instance); use Redis for multi-instance.
+- Uploaded media is stored on local disk and served from `/public/uploads`;
+  production should use object storage.

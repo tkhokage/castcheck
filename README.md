@@ -30,8 +30,9 @@ coherent product:
   scoring, and a report → ticket workflow.
 - **IT support** — a support center, auto-triaged tickets, resolution
   workflows, and a knowledge base.
-- **Security** — custom auth, RBAC, MFA-ready sessions, audit logging, input
-  validation, and data minimization.
+- **Security** — custom auth, RBAC, **TOTP MFA**, email verification, rate
+  limiting, validated file uploads, audit logging, input validation, and data
+  minimization.
 - **GRC** — a risk register, control matrix, asset inventory, and incident
   register with the nine-question risk model.
 - **AI** — opportunity screening, risk narratives, career-fit explanations, and
@@ -48,6 +49,7 @@ cp .env.example .env      # then edit if you like
 npm run db:push           # create the SQLite schema
 npm run db:seed           # load demo data + accounts
 npm run dev               # http://localhost:3000
+npm test                  # run the unit suite (36 tests)
 ```
 
 ### Demo accounts
