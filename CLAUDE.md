@@ -37,6 +37,14 @@ custom auth (bcryptjs + jose JWT httpOnly cookie), Zod, Anthropic SDK (optional)
 - Phase 1 MVP — done · Phase 2 Trust — done · Phase 3 Support — done
 - Phase 4 Security & GRC — done · Phase 5 AI — done · Phase 6 Real data — planned
 
+## Production readiness — done
+Hardening: rate limiting, TOTP MFA, email verification, validated uploads, 36-test
+Vitest suite. Deploy: `output: "standalone"`, `/api/health`, Postgres path
+(scripts/set-db-provider.mjs + prisma/migrations/0_init + db:migrate:deploy),
+Dockerfile + docker-compose, GitHub Actions CI, docs/deployment.md. Verified via
+`next build` + `next start` (pages 200, health db:up). Local dev stays SQLite.
+Live cloud deploy is the only remaining step — needs the user's host credentials.
+
 ## Backlog (see docs/roadmap.md)
-Rate limiting, email verification, MFA enforcement, file uploads, automated tests
-(Vitest for lib/*, Playwright for critical flows), Postgres migration.
+Postgres+object storage in prod, Redis-backed limiter, real email provider,
+Playwright e2e. Phase 6 real permitted-source data.
