@@ -37,6 +37,25 @@ model User {
   assigned     Ticket[]           @relation("ticketAnalyst")
   createdOpps  Opportunity[]      @relation("oppCreator")
   auditLogs    AuditLog[]
+  contracts    ContractAnalysis[]
+}
+
+// Contract analysis (spec §32–33). Stores the derived findings only — never the
+// full contract text (contracts are "sensitive" tier; data is minimized).
+model ContractAnalysis {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  source       String?  // agency | production | other
+  findings     Json     // ClauseFinding[]
+  flagCount    Int      @default(0)
+  cautionCount Int      @default(0)
+  commissionPct Int?
+  summary      String
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
 }
 
 model AuditLog {

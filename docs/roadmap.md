@@ -28,12 +28,18 @@ reputation signals → social media → anonymous claims. Reviews and social pos
 are never definitive proof. Until a source is genuinely live, data is labeled
 **demo**.
 
-## Later AI modules (designed)
+## Later AI modules
 
-- **Contract analysis** — commission, exclusivity, termination, likeness/AI
-  clauses; education only.
-- **AI & digital likeness** — flag training, replica, voice-cloning, and
-  synthetic-performance language.
+- ✅ **Contract analysis** (`/contracts`) — paste an agency/production agreement
+  and get a plain-language, clause-by-clause breakdown: commission (with a
+  high-rate flag), exclusivity, term, renewal, termination, territory, expenses,
+  payment, confidentiality, publicity, and post-termination commissions.
+  Education only — every serious item points to an entertainment attorney.
+  Rule-based engine (`src/lib/contract.ts`, unit-tested) with optional AI summary;
+  stores findings only, never the raw contract text (data minimization).
+- ✅ **AI & digital likeness** — folded into contract analysis: detects and
+  high-flags digital-replica, voice-cloning, AI-training, synthetic-performance,
+  and perpetual/irrevocable-rights language.
 
 ## Production hardening
 

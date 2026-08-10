@@ -35,9 +35,10 @@ coherent product:
   minimization.
 - **GRC** — a risk register, control matrix, asset inventory, and incident
   register with the nine-question risk model.
-- **AI** — opportunity screening, risk narratives, career-fit explanations, and
-  ticket triage — always with a confidence label, and always assisting (never
-  replacing) human decisions.
+- **AI** — opportunity screening, risk narratives, career-fit explanations,
+  ticket triage, and **contract analysis** (clause-by-clause explanation with
+  AI/digital-likeness flagging) — always with a confidence label, and always
+  assisting (never replacing) human decisions.
 
 ---
 

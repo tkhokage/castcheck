@@ -141,3 +141,29 @@ export async function fitNarrative(input: {
   if (!raw) return fallback;
   return { data: { summary: raw.trim() }, source: "ai", confidence: "high", note: "AI-assisted explanation of your fit." };
 }
+
+// --- Contract plain-language summary (spec §32) ------------------------------
+
+export async function contractNarrative(input: {
+  findings: { label: string; concern: string; explain: string }[];
+  flags: string[];
+}): Promise<AiResult<{ summary: string }>> {
+  const fallback: AiResult<{ summary: string }> = {
+    data: {
+      summary:
+        input.flags.length > 0
+          ? `The biggest things to review with an attorney: ${input.flags.join(", ")}. Read each clause below and don't sign anything you don't understand.`
+          : `No high-concern clauses were auto-detected, but review each clause below and have an attorney look at anything you're unsure about before signing.`,
+    },
+    source: "rule-based",
+    confidence: "medium",
+    note: "Plain-language summary of the detected clauses. Not legal advice.",
+  };
+
+  const raw = await complete(
+    `You help an emerging actor understand an entertainment contract. Explain in plain, calm language. You are NOT a lawyer: never give legal advice, never say a clause is 'fine' or 'safe', and always steer serious items to a qualified entertainment attorney. 2-3 sentences.`,
+    `Detected clauses:\n${input.findings.map((f) => `- ${f.label} [${f.concern}]: ${f.explain}`).join("\n")}\nHigh-concern: ${input.flags.join(", ") || "none"}`,
+  );
+  if (!raw) return fallback;
+  return { data: { summary: raw.trim() }, source: "ai", confidence: "medium", note: "AI-assisted summary. Not legal advice — consult an attorney." };
+}

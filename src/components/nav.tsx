@@ -10,6 +10,7 @@ import { ShieldCheck } from "lucide-react";
 const NAV_LINKS = [
   { href: "/discover", label: "Discover" },
   { href: "/agencies", label: "Agencies" },
+  { href: "/contracts", label: "Contracts" },
   { href: "/tracker", label: "Tracker" },
   { href: "/knowledge", label: "Help" },
 ];
