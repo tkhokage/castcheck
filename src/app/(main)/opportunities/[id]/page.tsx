@@ -11,7 +11,8 @@ import { riskNarrative, fitNarrative, aiEnabled } from "@/lib/ai";
 import { RISK_CATEGORIES } from "@/lib/constants";
 import { asList, formatDate, monthYear } from "@/lib/utils";
 import {
-  MapPin, DollarSign, Calendar, Building2, User, Send, Link2, ArrowLeft, ShieldAlert, Sparkles, Info,
+  MapPin, DollarSign, Calendar, Building2, User, Send, ArrowLeft, ShieldAlert, Sparkles, Info,
+  Globe, Mail, Phone, SearchCheck,
 } from "lucide-react";
 
 export default async function OpportunityDetail({ params }: PageProps<"/opportunities/[id]">) {
@@ -222,17 +223,44 @@ export default async function OpportunityDetail({ params }: PageProps<"/opportun
             )}
           </Card>
 
-          {/* Source */}
+          {/* Source & contact */}
           <Card className="p-5 text-sm">
-            <h2 className="font-semibold">Source & freshness</h2>
+            <h2 className="font-semibold">Source & contact</h2>
             <p className="mt-2 text-muted">Source: {opp.source ?? "—"}</p>
             <p className="text-muted">Last verified: {monthYear(opp.lastVerifiedAt)}</p>
-            {opp.sourceUrl && (
-              <a href={opp.sourceUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 font-medium text-primary hover:underline">
-                <Link2 className="h-3.5 w-3.5" /> Official link
-              </a>
-            )}
-            {opp.isDemo && <Badge tone="neutral" className="mt-3">Demo data</Badge>}
+
+            <div className="mt-3 space-y-1.5 border-t border-border pt-3">
+              {opp.sourceUrl ? (
+                <a href={opp.sourceUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-medium text-primary hover:underline">
+                  <Globe className="h-4 w-4 shrink-0" /> Official website
+                </a>
+              ) : (
+                <p className="flex items-center gap-2 text-muted"><Globe className="h-4 w-4 shrink-0" /> No website listed</p>
+              )}
+              {opp.contactName && <p className="flex items-center gap-2 text-muted"><User className="h-4 w-4 shrink-0" /> {opp.contactName}</p>}
+              {opp.contactEmail && (
+                <a href={`mailto:${opp.contactEmail}`} className="flex items-center gap-2 text-primary hover:underline">
+                  <Mail className="h-4 w-4 shrink-0" /> {opp.contactEmail}
+                </a>
+              )}
+              {opp.contactPhone && (
+                <a href={`tel:${opp.contactPhone}`} className="flex items-center gap-2 text-primary hover:underline">
+                  <Phone className="h-4 w-4 shrink-0" /> {opp.contactPhone}
+                </a>
+              )}
+              {!opp.contactEmail && !opp.contactPhone && <p className="flex items-center gap-2 text-muted"><Mail className="h-4 w-4 shrink-0" /> No contact listed</p>}
+            </div>
+
+            <div className="mt-3 flex items-start gap-2 rounded-lg bg-surface-2 p-2.5 text-xs text-muted">
+              <SearchCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span>
+                <span className="font-medium text-foreground">Verify before you share.</span> Search the production
+                company and casting entity independently, confirm the website domain matches, and never send money,
+                your SSN, ID, or banking details to confirm a role.
+              </span>
+            </div>
+
+            {opp.isDemo && <Badge tone="neutral" className="mt-3">Demo data — example contacts</Badge>}
           </Card>
         </aside>
       </div>
