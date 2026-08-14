@@ -74,12 +74,15 @@ export function ReportDialog({ id }: { id: string }) {
       {open && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-black/40 p-4" onClick={() => setOpen(false)}>
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Report opportunity"
             className="w-full max-w-md rounded-[var(--radius)] border border-border bg-surface p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between">
               <h3 className="text-lg font-bold">Report opportunity</h3>
-              <button onClick={() => setOpen(false)} className="text-muted hover:text-foreground">
+              <button onClick={() => setOpen(false)} aria-label="Close dialog" className="text-muted hover:text-foreground">
                 <X className="h-5 w-5" />
               </button>
             </div>

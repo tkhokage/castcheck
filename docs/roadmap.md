@@ -67,6 +67,7 @@ have to do extra work. Live status tracked in `AGENTS.md`.
 - **G5 ✅** Branded error / 404 / loading pages; success confirmations.
 - **G6 ✅** `/privacy` + `/terms`; footer contact + `security.txt` (placeholder
   addresses with a documented TODO to set real inboxes).
-- **G7** Accessibility (aria labels, alt text, focus, contrast).
+- **G7 ✅** Accessibility (aria labels, alt text, focus, contrast — badge tones
+  audited and adjusted to meet WCAG AA in light and dark).
 - **G8** Knowledge-base outbound "verify independently" links.
 - **G9** Full deploy + post-deploy + regression verification.

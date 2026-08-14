@@ -25,15 +25,16 @@ export function AgencyFilters() {
         <input
           defaultValue={params.get("q") ?? ""}
           onChange={(e) => setParam("q", e.target.value)}
+          aria-label="Search agencies by name"
           placeholder="Search agencies…"
           className={`${inputClass} pl-9`}
         />
       </div>
-      <select value={params.get("location") ?? ""} onChange={(e) => setParam("location", e.target.value)} className={inputClass}>
+      <select aria-label="Filter agencies by location" value={params.get("location") ?? ""} onChange={(e) => setParam("location", e.target.value)} className={inputClass}>
         <option value="">Any location</option>
         {LOCATIONS.map((l) => <option key={l} value={l}>{l}</option>)}
       </select>
-      <select value={params.get("specialty") ?? ""} onChange={(e) => setParam("specialty", e.target.value)} className={inputClass}>
+      <select aria-label="Filter agencies by representation type" value={params.get("specialty") ?? ""} onChange={(e) => setParam("specialty", e.target.value)} className={inputClass}>
         <option value="">Any representation</option>
         {REPRESENTATION_TYPES.map((r) => <option key={r} value={r}>{r}</option>)}
       </select>

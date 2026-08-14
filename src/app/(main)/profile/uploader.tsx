@@ -48,7 +48,7 @@ export function Uploader({ kind, currentUrl }: { kind: Kind; currentUrl?: string
 
       {kind === "headshot" && url && (
         <div className="mt-3 overflow-hidden rounded-lg border border-border">
-          <Image src={url} alt="Headshot" width={200} height={200} unoptimized className="h-40 w-full object-cover" />
+          <Image src={url} alt="Your uploaded headshot" width={200} height={200} unoptimized className="h-40 w-full object-cover" />
         </div>
       )}
       {kind !== "headshot" && url && (

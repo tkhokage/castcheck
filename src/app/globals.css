@@ -11,7 +11,7 @@
   --border-strong: #cbd2e1;
   --foreground: #131722;
   --muted: #5b6478;
-  --muted-2: #8a92a6;
+  --muted-2: #616a80; /* darkened for WCAG AA on light surfaces */
 
   --primary: #3b4ee0;
   --primary-hover: #3140c4;
@@ -21,16 +21,16 @@
   --accent: #0ea5a5;
   --accent-soft: #e0f5f4;
 
-  /* Status */
-  --success: #17864f;
+  /* Status (text tones meet WCAG AA on their -soft backgrounds) */
+  --success: #0f7040;
   --success-soft: #e2f5ea;
-  --warning: #b7791f;
+  --warning: #875200;
   --warning-soft: #fcf1dd;
   --danger: #c0392b;
   --danger-soft: #fbe6e3;
   --info: #2563a8;
   --info-soft: #e4eefb;
-  --neutral: #64748b;
+  --neutral: #525d73;
   --neutral-soft: #eef1f6;
 
   --ring: #3b4ee0;
@@ -48,8 +48,8 @@
   --muted: #9aa4ba;
   --muted-2: #6b7690;
 
-  --primary: #6c7cf5;
-  --primary-hover: #808ef7;
+  --primary: #8b98f8; /* lightened for WCAG AA text on --primary-soft in dark */
+  --primary-hover: #9aa5f9;
   --primary-fg: #0b0e16;
   --primary-soft: #1e2544;
 

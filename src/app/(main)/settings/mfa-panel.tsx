@@ -66,7 +66,7 @@ export function MfaPanel({ enabled }: { enabled: boolean }) {
         <div className="mt-4 rounded-lg border border-border bg-surface-2 p-4">
           <p className="text-sm font-medium">1. Scan this QR with your authenticator app</p>
           <div className="mt-2 inline-block rounded-lg bg-white p-2">
-            <Image src={enroll.qr} alt="MFA QR code" width={180} height={180} unoptimized />
+            <Image src={enroll.qr} alt="Two-factor setup QR code — scan it with your authenticator app, or use the key below" width={180} height={180} unoptimized />
           </div>
           <p className="mt-2 text-sm text-muted">
             Or enter this key manually:{" "}

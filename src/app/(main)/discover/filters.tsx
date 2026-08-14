@@ -38,6 +38,7 @@ export function DiscoverFilters() {
         <input
           defaultValue={params.get("q") ?? ""}
           onChange={(e) => setParam("q", e.target.value)}
+          aria-label="Search casting calls by title, role, production, or company"
           placeholder="Search title, role, production, company…"
           className={`${inputClass} pl-9`}
         />
