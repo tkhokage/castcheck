@@ -84,5 +84,5 @@ export async function createOpportunity(_prev: unknown, formData: FormData) {
   });
 
   await audit({ userId: session!.id, action: "opportunity.create", resource: `opportunity:${opp.id}`, meta: { screenedState: screen.suggestedState } });
-  redirect(`/opportunities/${opp.id}`);
+  redirect(`/opportunities/${opp.id}?posted=1`);
 }

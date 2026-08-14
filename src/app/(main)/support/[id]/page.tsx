@@ -6,6 +6,7 @@ import { can } from "@/lib/rbac";
 import { Card, Badge } from "@/components/ui";
 import { PriorityBadge, TicketStatusBadge } from "@/components/ticket-badges";
 import { StaffPanel } from "./staff-panel";
+import { SuccessBanner } from "@/components/flash";
 import { formatDate } from "@/lib/utils";
 import { ArrowLeft } from "lucide-react";
 
@@ -16,8 +17,9 @@ const CHECKLISTS: Record<string, string[]> = {
 };
 const DEFAULT_CHECKLIST = ["Verify account", "Reproduce the issue", "Identify root cause", "Apply fix or guidance", "Confirm with user", "Document resolution"];
 
-export default async function TicketDetail({ params }: PageProps<"/support/[id]">) {
+export default async function TicketDetail({ params, searchParams }: PageProps<"/support/[id]">) {
   const { id } = await params;
+  const { created } = await searchParams;
   const session = await getSession();
   if (!session) redirect("/login");
 
@@ -38,6 +40,13 @@ export default async function TicketDetail({ params }: PageProps<"/support/[id]"
       <Link href={isStaff ? "/dashboard/tickets" : "/support"} className="mb-6 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
+
+      {created && (
+        <SuccessBanner>
+          <strong>Ticket submitted.</strong> We&rsquo;ve auto-categorized and prioritized it — our support team will
+          follow up. You can track its status right here.
+        </SuccessBanner>
+      )}
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>

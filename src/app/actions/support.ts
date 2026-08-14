@@ -39,7 +39,7 @@ export async function createTicket(_prev: unknown, formData: FormData) {
     },
   });
   await audit({ userId: session.id, action: "ticket.create", resource: `ticket:${ticket.id}` });
-  redirect(`/support/${ticket.id}`);
+  redirect(`/support/${ticket.id}?created=1`);
 }
 
 const updateSchema = z.object({

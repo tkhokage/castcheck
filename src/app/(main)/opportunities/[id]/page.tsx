@@ -8,6 +8,7 @@ import { VerificationBadge, RiskBadge, TrustLevelBadge } from "@/components/badg
 import { SaveButton, TrackButton, ReportDialog } from "@/components/opportunity-actions";
 import { LiveCheck } from "@/components/live-check";
 import { SubmitPanel } from "@/components/submit-panel";
+import { SuccessBanner } from "@/components/flash";
 import { CHECK_STATUS_ICON, LIKELIHOOD_LABELS, IMPACT_LABELS, riskScore } from "@/lib/risk";
 import { careerFit } from "@/lib/matching";
 import { riskNarrative, fitNarrative, aiEnabled } from "@/lib/ai";
@@ -18,8 +19,9 @@ import {
   Globe, Mail, Phone, SearchCheck, Film,
 } from "lucide-react";
 
-export default async function OpportunityDetail({ params }: PageProps<"/opportunities/[id]">) {
+export default async function OpportunityDetail({ params, searchParams }: PageProps<"/opportunities/[id]">) {
   const { id } = await params;
+  const { posted } = await searchParams;
   const user = await getCurrentUser();
 
   const opp = await db.opportunity.findUnique({
@@ -64,6 +66,13 @@ export default async function OpportunityDetail({ params }: PageProps<"/opportun
       <Link href="/discover" className="mb-6 inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
         <ArrowLeft className="h-4 w-4" /> Back to Discover
       </Link>
+
+      {posted && (
+        <SuccessBanner>
+          <strong>Listing submitted.</strong> It&rsquo;s been auto-screened and will be reviewed by a moderator
+          before it&rsquo;s marked verified. The results below reflect the automatic screening.
+        </SuccessBanner>
+      )}
 
       {dangerous && (
         <div className="mb-6 flex items-start gap-3 rounded-[var(--radius)] border border-danger/40 bg-danger-soft p-4 text-danger">
