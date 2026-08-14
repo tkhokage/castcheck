@@ -4,11 +4,12 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import { beginMfa, confirmMfa, disableMfa } from "@/app/actions/account";
 import { Button, Badge, inputClass } from "@/components/ui";
-import { ShieldCheck, ShieldOff, Check } from "lucide-react";
+import { ShieldCheck, ShieldOff, Check, KeyRound } from "lucide-react";
 
 export function MfaPanel({ enabled }: { enabled: boolean }) {
   const [on, setOn] = useState(enabled);
   const [enroll, setEnroll] = useState<{ secret: string; qr: string } | null>(null);
+  const [codes, setCodes] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -26,7 +27,7 @@ export function MfaPanel({ enabled }: { enabled: boolean }) {
     start(async () => {
       const res = await confirmMfa(undefined, formData);
       if (res?.error) setError(res.error);
-      else { setOn(true); setEnroll(null); }
+      else { setOn(true); setEnroll(null); setCodes(res.recoveryCodes ?? null); }
     });
   }
 
@@ -82,20 +83,36 @@ export function MfaPanel({ enabled }: { enabled: boolean }) {
         </div>
       )}
 
+      {codes && (
+        <div className="mt-4 rounded-lg border border-warning/40 bg-warning-soft/50 p-4">
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-warning"><KeyRound className="h-4 w-4" /> Save your recovery codes</p>
+          <p className="mt-1 text-xs text-muted">
+            Store these somewhere safe. Each works <strong>once</strong> to sign in if you lose your authenticator.
+            You won&rsquo;t see them again.
+          </p>
+          <ul className="mt-3 grid grid-cols-2 gap-1.5 font-mono text-sm">
+            {codes.map((c) => <li key={c} className="rounded bg-surface px-2 py-1 text-center tracking-widest">{c}</li>)}
+          </ul>
+          <button onClick={() => setCodes(null)} className="mt-3 text-xs font-medium text-primary hover:underline">
+            I&rsquo;ve saved them — hide
+          </button>
+        </div>
+      )}
+
       {on && (
         <form action={disable} className="mt-4 flex items-end gap-2">
           <label className="block">
             <span className="mb-1 block text-sm font-medium">Enter a code to disable 2FA</span>
-            <input name="code" inputMode="numeric" pattern="\d{6}" maxLength={6} required
-              className={`${inputClass} w-32 font-mono tracking-widest`} placeholder="000000" />
+            <input name="code" required autoComplete="one-time-code"
+              className={`${inputClass} w-48 font-mono tracking-widest`} placeholder="000000 or recovery code" />
           </label>
           <Button type="submit" variant="outline" disabled={pending}>Disable</Button>
         </form>
       )}
 
-      {on && !enroll && (
+      {on && !enroll && !codes && (
         <p className="mt-3 inline-flex items-center gap-1 text-sm text-success">
-          <Check className="h-4 w-4" /> You&rsquo;ll be asked for a code at sign-in.
+          <Check className="h-4 w-4" /> You&rsquo;ll be asked for a code at sign-in. A recovery code also works.
         </p>
       )}
     </div>

@@ -6,8 +6,12 @@ import crypto from "node:crypto";
 import { db } from "@/lib/db";
 import { hashPassword, verifyPassword, createSession, destroySession } from "@/lib/auth";
 import { audit } from "@/lib/audit";
+import { Prisma } from "@prisma/client";
 import { rateLimit } from "@/lib/rate-limit";
 import { verifyTotp } from "@/lib/totp";
+import { consumeRecoveryCode } from "@/lib/recovery";
+import { asList } from "@/lib/utils";
+import { sendVerification, baseUrl } from "@/lib/email";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Enter your name"),
@@ -36,13 +40,14 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   const existing = await db.user.findUnique({ where: { email: email.toLowerCase() } });
   if (existing) return { error: "An account with that email already exists." };
 
+  const verifyToken = crypto.randomBytes(24).toString("hex");
   const user = await db.user.create({
     data: {
       name,
       email: email.toLowerCase(),
       passwordHash: await hashPassword(password),
       role,
-      verifyToken: crypto.randomBytes(24).toString("hex"),
+      verifyToken,
       profile:
         role === "actor"
           ? { create: { displayName: name, experienceLevel: "emerging" } }
@@ -51,6 +56,8 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   });
 
   await audit({ userId: user.id, action: "account.create", resource: `user:${user.id}` });
+  // Fire off a verification email (no-op-safe when no provider is configured).
+  await sendVerification(user.email, `${await baseUrl()}/verify?token=${verifyToken}`);
   await createSession({ id: user.id, email: user.email, name: user.name, role: user.role as never });
   redirect(role === "actor" ? "/profile" : "/dashboard");
 }
@@ -81,12 +88,26 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
     return { error: "Invalid email or password." };
   }
 
-  // Second factor, when enabled.
+  // Second factor, when enabled — accept the authenticator code or a recovery code.
   if (user.mfaEnabled && user.mfaSecret) {
     if (!parsed.data.code) return { mfaRequired: true };
-    if (!verifyTotp(user.mfaSecret, parsed.data.code)) {
+
+    let ok = verifyTotp(user.mfaSecret, parsed.data.code);
+    if (!ok) {
+      const hashes = asList<string>(user.mfaRecoveryCodes);
+      const res = await consumeRecoveryCode(hashes, parsed.data.code);
+      if (res.matched) {
+        ok = true;
+        await db.user.update({
+          where: { id: user.id },
+          data: { mfaRecoveryCodes: res.remaining.length ? (res.remaining as unknown as Prisma.InputJsonValue) : Prisma.DbNull },
+        });
+        await audit({ userId: user.id, action: "auth.mfa_recovery", meta: { remaining: res.remaining.length } });
+      }
+    }
+    if (!ok) {
       await audit({ userId: user.id, action: "auth.mfa", result: "failure" });
-      return { mfaRequired: true, error: "Invalid authentication code." };
+      return { mfaRequired: true, error: "Invalid authentication or recovery code." };
     }
     await audit({ userId: user.id, action: "auth.mfa" });
   }

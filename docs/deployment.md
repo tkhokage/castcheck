@@ -16,6 +16,16 @@ and `GET /api/health` → `{"status":"ok","db":"up"}`).
   ```bash
   node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"
   ```
+- **Transactional email (for password reset + verification).** Sign up for
+  [Resend](https://resend.com) (free tier: 3,000 emails/mo), verify a sending
+  domain, create an API key, and set:
+  - `EMAIL_PROVIDER_API_KEY` — the Resend API key.
+  - `EMAIL_FROM` — e.g. `CASTCHECK <noreply@yourdomain.com>` (must match a
+    verified Resend domain).
+  - `APP_URL` — your public base URL (e.g. `https://castcheck.vercel.app`), so
+    email links are absolute.
+  Without these, reset/verification links are logged and shown in a dev-only
+  banner instead of emailed — fine for local dev, not for production.
 - Optional `ANTHROPIC_API_KEY` to enable the AI layer.
 
 See [`.env.production.example`](../.env.production.example).

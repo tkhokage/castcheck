@@ -82,10 +82,20 @@ information is stored.
   when `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true` — a real deploy ships no working
   credentials on its public login page.
 
+## Account recovery
+
+- **Forgot password:** `/forgot-password` issues a single-use, 1-hour token and
+  emails a reset link (`/reset-password`). Responses don't reveal whether an
+  account exists. Rate-limited.
+- **2FA recovery codes:** eight single-use codes are generated at MFA enrollment,
+  stored only as bcrypt hashes, shown once, and accepted as an alternate second
+  factor at sign-in and when disabling MFA.
+- **Email delivery** goes through the provider integration (`src/lib/email.ts`,
+  Resend). Without `EMAIL_PROVIDER_API_KEY` it degrades gracefully — the link is
+  logged and shown in a dev-only banner, never silently dropped.
+
 ## Known limitations (demo build)
 
-- Email verification generates real tokens but "delivers" the link in-app (no
-  email provider wired up).
 - The rate limiter is in-memory (single instance); use Redis for multi-instance.
 - Uploaded media is stored on local disk and served from `/public/uploads`;
   production should use object storage.

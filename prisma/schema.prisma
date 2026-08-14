@@ -23,8 +23,11 @@ model User {
   role         String   @default("actor")
   mfaEnabled   Boolean  @default(false)
   mfaSecret    String?
+  mfaRecoveryCodes Json?  // bcrypt-hashed single-use 2FA recovery codes
   emailVerified DateTime?
   verifyToken  String?
+  resetToken   String?
+  resetTokenExpiry DateTime?
   active        Boolean  @default(true)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

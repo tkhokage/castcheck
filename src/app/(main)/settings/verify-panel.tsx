@@ -8,6 +8,7 @@ import { MailCheck, Mail } from "lucide-react";
 
 export function VerifyPanel({ verified }: { verified: boolean }) {
   const [link, setLink] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -16,7 +17,8 @@ export function VerifyPanel({ verified }: { verified: boolean }) {
     start(async () => {
       const res = await resendVerification();
       if ("error" in res) setError(res.error);
-      else setLink(res.link);
+      else if (res.delivered) setSent(true);
+      else setLink(res.link ?? null);
     });
   }
 
@@ -35,18 +37,21 @@ export function VerifyPanel({ verified }: { verified: boolean }) {
       ) : (
         <>
           <p className="mt-1 text-sm text-muted">
-            Verify your email to secure your account. This build has no email provider, so the link is shown
-            here for the demo.
+            Verify your email to secure your account. We&rsquo;ll email you a verification link.
           </p>
           {error && <p className="mt-3 text-sm text-danger">{error}</p>}
-          {link ? (
+          {sent ? (
+            <div className="mt-3 flex items-center gap-2 rounded-lg bg-success-soft p-3 text-sm text-success">
+              <MailCheck className="h-4 w-4" /> Verification email sent — check your inbox.
+            </div>
+          ) : link ? (
             <div className="mt-3 rounded-lg bg-surface-2 p-3 text-sm">
-              <p className="font-medium">Verification link (demo):</p>
+              <p className="font-medium">Dev mode — no email provider configured, so here&rsquo;s the link:</p>
               <Link href={link} className="break-all font-mono text-xs text-primary hover:underline">{link}</Link>
             </div>
           ) : (
             <Button className="mt-4" variant="outline" onClick={resend} disabled={pending}>
-              {pending ? "Generating…" : "Get verification link"}
+              {pending ? "Sending…" : "Send verification email"}
             </Button>
           )}
         </>

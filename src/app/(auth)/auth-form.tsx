@@ -48,17 +48,22 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         />
       </Field>
 
+      {mode === "login" && (
+        <div className="-mt-2 text-right">
+          <Link href="/forgot-password" className="text-sm font-medium text-primary hover:underline">
+            Forgot password?
+          </Link>
+        </div>
+      )}
+
       {mfa && (
-        <Field label="Authentication code">
+        <Field label="Authentication code" hint="Lost your device? Enter a recovery code instead.">
           <input
             name="code"
-            inputMode="numeric"
-            pattern="\d{6}"
-            maxLength={6}
             required
             autoFocus
             className={`${inputClass} font-mono tracking-widest`}
-            placeholder="000000"
+            placeholder="000000 or recovery code"
             autoComplete="one-time-code"
           />
         </Field>
