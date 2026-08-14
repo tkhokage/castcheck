@@ -34,7 +34,7 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   }
   const { name, email, password, role } = parsed.data;
 
-  const limit = rateLimit(`register:${email.toLowerCase()}`, 5, 60 * 60_000);
+  const limit = await rateLimit(`register:${email.toLowerCase()}`, 5, 60 * 60_000);
   if (!limit.ok) return { error: `Too many attempts. Try again in ${limit.retryAfterSec}s.` };
 
   const existing = await db.user.findUnique({ where: { email: email.toLowerCase() } });
@@ -76,7 +76,7 @@ export async function login(_prev: AuthState, formData: FormData): Promise<AuthS
   });
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
-  const limit = rateLimit(`login:${parsed.data.email.toLowerCase()}`, 5, 15 * 60_000);
+  const limit = await rateLimit(`login:${parsed.data.email.toLowerCase()}`, 5, 15 * 60_000);
   if (!limit.ok) {
     await audit({ action: "auth.login", result: "rate_limited", meta: { email: parsed.data.email.toLowerCase() } });
     return { error: `Too many sign-in attempts. Try again in ${limit.retryAfterSec}s.` };

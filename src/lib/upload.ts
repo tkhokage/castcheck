@@ -51,10 +51,27 @@ export async function saveUpload(file: File, kind: UploadKind, userId: string): 
 
   const ext = EXT[file.type] ?? "bin";
   const name = `${kind}-${userId.slice(-6)}-${crypto.randomBytes(6).toString("hex")}.${ext}`;
+  const bytes = Buffer.from(await file.arrayBuffer());
+
+  // Production: object storage (Vercel Blob) when configured. Local disk otherwise.
+  // Both return a URL, so callers are unchanged.
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const { put } = await import("@vercel/blob");
+      const blob = await put(`uploads/${name}`, bytes, {
+        access: "public",
+        contentType: file.type,
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+      return { ok: true, url: blob.url };
+    } catch (e) {
+      console.error("[upload] blob store failed", e);
+      return { ok: false, error: "Upload failed. Please try again." };
+    }
+  }
+
   const dir = path.join(process.cwd(), "public", "uploads");
   await mkdir(dir, { recursive: true });
-  const bytes = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(dir, name), bytes);
-
   return { ok: true, url: `/uploads/${name}` };
 }

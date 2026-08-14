@@ -15,7 +15,7 @@ export async function checkOpportunityWebsite(
   const session = await getSession();
 
   const key = `livecheck:${session?.id ?? "anon"}`;
-  const limit = rateLimit(key, 10, 60_000);
+  const limit = await rateLimit(key, 10, 60_000);
   if (!limit.ok) return { error: `Slow down — try again in ${limit.retryAfterSec}s.` };
 
   const opp = await db.opportunity.findUnique({
@@ -40,7 +40,7 @@ export async function checkAgencyWebsite(
 ): Promise<{ result?: WebVerifyResult; error?: string }> {
   const session = await getSession();
 
-  const limit = rateLimit(`livecheck:${session?.id ?? "anon"}`, 10, 60_000);
+  const limit = await rateLimit(`livecheck:${session?.id ?? "anon"}`, 10, 60_000);
   if (!limit.ok) return { error: `Slow down — try again in ${limit.retryAfterSec}s.` };
 
   const agency = await db.agency.findUnique({

@@ -94,8 +94,13 @@ information is stored.
   Resend). Without `EMAIL_PROVIDER_API_KEY` it degrades gracefully — the link is
   logged and shown in a dev-only banner, never silently dropped.
 
-## Known limitations (demo build)
+## Production infrastructure
 
-- The rate limiter is in-memory (single instance); use Redis for multi-instance.
-- Uploaded media is stored on local disk and served from `/public/uploads`;
-  production should use object storage.
+- **Uploads** go to object storage (Vercel Blob) when `BLOB_READ_WRITE_TOKEN` is
+  set (`src/lib/upload.ts`), and fall back to local disk for dev. Files survive
+  redeploys and serverless instances.
+- **Rate limiting** uses Upstash Redis when `UPSTASH_REDIS_REST_URL` /
+  `UPSTASH_REDIS_REST_TOKEN` are set (`src/lib/rate-limit.ts`), so limits are
+  enforced across instances; it falls back to an in-memory store for dev.
+
+Configure both in `.env.production.example` / `docs/deployment.md`.

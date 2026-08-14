@@ -26,6 +26,13 @@ and `GET /api/health` → `{"status":"ok","db":"up"}`).
     email links are absolute.
   Without these, reset/verification links are logged and shown in a dev-only
   banner instead of emailed — fine for local dev, not for production.
+- **Object storage for uploads.** On Vercel: **Storage → Blob → Create store**;
+  the `BLOB_READ_WRITE_TOKEN` is injected automatically (copy it for other hosts).
+  Without it, uploads use local disk — which is ephemeral on serverless, so set
+  this for any real deploy.
+- **Redis rate limiting.** Sign up for [Upstash](https://upstash.com), create a
+  Redis database, and set `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`.
+  Without them the limiter falls back to per-instance memory.
 - Optional `ANTHROPIC_API_KEY` to enable the AI layer.
 
 See [`.env.production.example`](../.env.production.example).

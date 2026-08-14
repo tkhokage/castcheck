@@ -17,7 +17,7 @@ export async function requestPasswordReset(_prev: ResetState, formData: FormData
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const email = parsed.data.email.toLowerCase();
 
-  const limit = rateLimit(`reset-request:${email}`, 5, 15 * 60_000);
+  const limit = await rateLimit(`reset-request:${email}`, 5, 15 * 60_000);
   if (!limit.ok) return { error: `Too many requests. Try again in ${limit.retryAfterSec}s.` };
 
   const user = await db.user.findUnique({ where: { email } });

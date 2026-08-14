@@ -21,7 +21,7 @@ real agency seeding landed).
 | G1 | Commit env example templates; clean-clone works | ✅ |
 | G2 | Fail-closed AUTH_SECRET; gate demo-accounts card | ✅ |
 | G3 | Real email integration; forgot-password; 2FA recovery codes | ✅ |
-| G4 | Object storage for uploads; Redis rate limiting | ⬜ |
+| G4 | Object storage for uploads; Redis rate limiting | ✅ |
 | G5 | error/not-found/loading pages; success confirmations | ⬜ |
 | G6 | /privacy + /terms; real contact + security.txt | ⬜ |
 | G7 | Accessibility pass (aria, alt, focus, contrast) | ⬜ |
