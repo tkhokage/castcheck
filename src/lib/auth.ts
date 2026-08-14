@@ -6,9 +6,22 @@ import { db } from "./db";
 import type { Role } from "./constants";
 
 const COOKIE = "castcheck_session";
-const secret = new TextEncoder().encode(
-  process.env.AUTH_SECRET || "insecure-dev-secret",
-);
+
+// Fail closed: refuse to run in production with a missing or weak signing secret.
+// (Skipped during `next build`, which has no runtime secrets.)
+const DEV_FALLBACK = "insecure-dev-secret";
+const WEAK_SECRETS = new Set([DEV_FALLBACK, "dev-only-change-me", "change-me", "insecure-dev-secret", ""]);
+const rawSecret = process.env.AUTH_SECRET;
+const isBuildPhase = process.env.NEXT_PHASE === "phase-production-build";
+
+if (process.env.NODE_ENV === "production" && !isBuildPhase && (!rawSecret || WEAK_SECRETS.has(rawSecret))) {
+  throw new Error(
+    "AUTH_SECRET is missing or set to a known weak value. Set a strong, unique secret before running in production:\n" +
+      '  node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"',
+  );
+}
+
+const secret = new TextEncoder().encode(rawSecret || DEV_FALLBACK);
 
 export interface SessionUser {
   id: string;

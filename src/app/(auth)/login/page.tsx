@@ -27,20 +27,22 @@ export default async function LoginPage() {
         <AuthForm mode="login" />
       </Card>
 
-      <Card className="mt-4 p-4 text-sm">
-        <p className="font-semibold">Demo accounts</p>
-        <p className="mt-1 text-muted">
-          Try any role — password <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-xs">demo1234</code>:
-        </p>
-        <ul className="mt-2 grid grid-cols-1 gap-1 font-mono text-xs text-muted sm:grid-cols-2">
-          <li>actor@castcheck.app</li>
-          <li>moderator@castcheck.app</li>
-          <li>support@castcheck.app</li>
-          <li>grc@castcheck.app</li>
-          <li>admin@castcheck.app</li>
-          <li>casting@castcheck.app</li>
-        </ul>
-      </Card>
+      {process.env.NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS === "true" && (
+        <Card className="mt-4 p-4 text-sm">
+          <p className="font-semibold">Demo accounts</p>
+          <p className="mt-1 text-muted">
+            Try any role — password <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-xs">demo1234</code>:
+          </p>
+          <ul className="mt-2 grid grid-cols-1 gap-1 font-mono text-xs text-muted sm:grid-cols-2">
+            <li>actor@castcheck.app</li>
+            <li>moderator@castcheck.app</li>
+            <li>support@castcheck.app</li>
+            <li>grc@castcheck.app</li>
+            <li>admin@castcheck.app</li>
+            <li>casting@castcheck.app</li>
+          </ul>
+        </Card>
+      )}
     </div>
   );
 }

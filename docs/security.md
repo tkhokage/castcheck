@@ -74,10 +74,16 @@ information is stored.
 - The app actively warns users when an opportunity requests excessive personal
   information.
 
+## Fail-closed production defaults
+
+- **`AUTH_SECRET` is enforced.** In production the app refuses to boot if
+  `AUTH_SECRET` is unset or set to a known weak/dev value (`src/lib/auth.ts`).
+- **Demo accounts are opt-in.** The login page only shows the demo-account helper
+  when `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=true` — a real deploy ships no working
+  credentials on its public login page.
+
 ## Known limitations (demo build)
 
-- `AUTH_SECRET` ships with a dev default — set a strong random value in
-  production.
 - Email verification generates real tokens but "delivers" the link in-app (no
   email provider wired up).
 - The rate limiter is in-memory (single instance); use Redis for multi-instance.

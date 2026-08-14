@@ -53,7 +53,19 @@ Done in this build:
 
 Still open:
 
-- Migrate to Postgres + `prisma migrate deploy` and object storage for uploads.
-- Back the rate limiter with Redis for multi-instance deployments.
-- Wire a real email provider for verification + notifications.
 - End-to-end tests (Playwright) for the critical journeys.
+
+## Ease-of-use / production-smoothness pass (G-phases)
+
+A dedicated pass to remove every point where a real user would hit a dead end or
+have to do extra work. Live status tracked in `AGENTS.md`.
+
+- **G1 ✅** Env example templates committed; clean clone runs from the README.
+- **G2 ✅** Production refuses a weak `AUTH_SECRET`; demo accounts gated off by default.
+- **G3** Real email (reset + verification), forgot-password flow, 2FA recovery codes.
+- **G4** Object storage for uploads; Redis-backed rate limiting.
+- **G5** Branded error / 404 / loading pages; success confirmations.
+- **G6** `/privacy` + `/terms`; real contact + `security.txt`.
+- **G7** Accessibility (aria labels, alt text, focus, contrast).
+- **G8** Knowledge-base outbound "verify independently" links.
+- **G9** Full deploy + post-deploy + regression verification.
