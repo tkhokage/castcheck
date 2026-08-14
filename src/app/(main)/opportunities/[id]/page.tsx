@@ -14,7 +14,7 @@ import { RISK_CATEGORIES } from "@/lib/constants";
 import { asList, formatDate, monthYear } from "@/lib/utils";
 import {
   MapPin, DollarSign, Calendar, Building2, User, Send, ArrowLeft, ShieldAlert, Sparkles, Info,
-  Globe, Mail, Phone, SearchCheck,
+  Globe, Mail, Phone, SearchCheck, Film,
 } from "lucide-react";
 
 export default async function OpportunityDetail({ params }: PageProps<"/opportunities/[id]">) {
@@ -78,7 +78,10 @@ export default async function OpportunityDetail({ params }: PageProps<"/opportun
         {/* Main column */}
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <Badge tone="primary">{opp.type}</Badge>
+            <span className="inline-flex items-center gap-1 rounded bg-primary-soft px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-primary">
+              <Film className="h-3.5 w-3.5" /> Casting call
+            </span>
+            <Badge tone="neutral">{opp.type}</Badge>
             <VerificationBadge state={opp.verificationState} />
             <RiskBadge level={opp.riskLevel} />
           </div>

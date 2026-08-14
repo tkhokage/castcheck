@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, Badge } from "./ui";
 import { VerificationBadge } from "./badges";
+import { LiveCheck } from "./live-check";
 import { asList } from "@/lib/utils";
 import { MapPin, Briefcase } from "lucide-react";
 
@@ -48,6 +49,8 @@ export function AgencyCard({ agency }: { agency: AgencyCardData }) {
         <VerificationBadge state={agency.verificationState} />
         {feeWarning && <Badge tone="danger">Charges talent</Badge>}
       </div>
+
+      <LiveCheck agencyId={agency.id} />
     </Card>
   );
 }

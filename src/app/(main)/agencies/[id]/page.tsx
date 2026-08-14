@@ -7,7 +7,7 @@ import { VerificationBadge, TrustLevelBadge } from "@/components/badges";
 import { agencyMatch } from "@/lib/matching";
 import { LiveCheck } from "@/components/live-check";
 import { asList, monthYear } from "@/lib/utils";
-import { ArrowLeft, MapPin, Globe, Mail, Phone, AlertTriangle } from "lucide-react";
+import { ArrowLeft, MapPin, Globe, Mail, Phone, AlertTriangle, Briefcase } from "lucide-react";
 
 export default async function AgencyDetail({ params }: PageProps<"/agencies/[id]">) {
   const { id } = await params;
@@ -44,6 +44,9 @@ export default async function AgencyDetail({ params }: PageProps<"/agencies/[id]
       <div className="grid gap-8 lg:grid-cols-[1fr_300px]">
         <div>
           <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded bg-accent-soft px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-accent">
+              <Briefcase className="h-3.5 w-3.5" /> Agency
+            </span>
             <VerificationBadge state={agency.verificationState} />
             <TrustLevelBadge level={agency.trustLevel} />
           </div>
