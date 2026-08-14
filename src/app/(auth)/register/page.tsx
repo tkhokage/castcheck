@@ -27,6 +27,11 @@ export default async function RegisterPage() {
           Find real opportunities, check them against evidence, and track your pursuit.
         </p>
         <AuthForm mode="register" />
+        <p className="mt-4 text-center text-xs text-muted">
+          By creating an account you agree to our{" "}
+          <Link href="/terms" className="font-medium text-primary hover:underline">Terms of Use</Link> and{" "}
+          <Link href="/privacy" className="font-medium text-primary hover:underline">Privacy Policy</Link>.
+        </p>
       </Card>
 
       <p className="mt-4 px-2 text-center text-xs text-muted">

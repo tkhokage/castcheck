@@ -1,6 +1,12 @@
 // Domain vocabulary for CASTCHECK. Single source of truth for filters, labels,
 // and select options across the app.
 
+// TODO(operator): before launch, replace these PLACEHOLDER addresses with real,
+// monitored inboxes on your own domain (the `.example` TLD is non-functional on
+// purpose so nothing looks real until you set it). Update /.well-known/security.txt too.
+export const CONTACT_EMAIL = "contact@castcheck.example";
+export const SECURITY_EMAIL = "security@castcheck.example";
+
 export const OPPORTUNITY_TYPES = [
   "film",
   "television",

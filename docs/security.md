@@ -4,6 +4,13 @@ CASTCHECK is built to the security requirements in the product spec: an actor's
 private data must never be exposed to another user, and no unnecessary sensitive
 information is stored.
 
+## Reporting a vulnerability
+
+Email **security@castcheck.example** — a placeholder address; the operator must
+replace it (and `/.well-known/security.txt` and `CONTACT_EMAIL`/`SECURITY_EMAIL`
+in `src/lib/constants.ts`) with a real, monitored inbox before launch. Our
+machine-readable policy lives at [`/.well-known/security.txt`](../public/.well-known/security.txt).
+
 ## Authentication
 
 - Passwords hashed with **bcrypt** (cost 10) via `bcryptjs`. Plaintext is never

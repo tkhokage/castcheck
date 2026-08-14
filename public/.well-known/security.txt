@@ -1,0 +1,7 @@
+# TODO(operator): before launch, replace the placeholder address below with a
+# real, monitored security inbox on your own domain, and refresh the Expires date.
+# The .example TLD is non-functional on purpose so nothing looks real until set.
+Contact: mailto:security@castcheck.example
+Expires: 2027-01-01T00:00:00.000Z
+Preferred-Languages: en
+Policy: https://github.com/tkhokage/castcheck/blob/main/docs/security.md
