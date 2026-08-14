@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { Card, Badge, LinkButton } from "@/components/ui";
 import { VerificationBadge, RiskBadge, TrustLevelBadge } from "@/components/badges";
 import { SaveButton, TrackButton, ReportDialog } from "@/components/opportunity-actions";
+import { LiveCheck } from "@/components/live-check";
 import { CHECK_STATUS_ICON, LIKELIHOOD_LABELS, IMPACT_LABELS, riskScore } from "@/lib/risk";
 import { careerFit } from "@/lib/matching";
 import { riskNarrative, fitNarrative, aiEnabled } from "@/lib/ai";
@@ -259,6 +260,8 @@ export default async function OpportunityDetail({ params }: PageProps<"/opportun
                 your SSN, ID, or banking details to confirm a role.
               </span>
             </div>
+
+            <LiveCheck opportunityId={opp.id} />
 
             {opp.isDemo && <Badge tone="neutral" className="mt-3">Demo data — example contacts</Badge>}
           </Card>

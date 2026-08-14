@@ -5,6 +5,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { Card, Badge } from "@/components/ui";
 import { VerificationBadge, TrustLevelBadge } from "@/components/badges";
 import { agencyMatch } from "@/lib/matching";
+import { LiveCheck } from "@/components/live-check";
 import { asList, monthYear } from "@/lib/utils";
 import { ArrowLeft, MapPin, Globe, Mail, Phone, AlertTriangle } from "lucide-react";
 
@@ -81,7 +82,20 @@ export default async function AgencyDetail({ params }: PageProps<"/agencies/[id]
               {agency.contactPhone && <p className="flex items-center gap-2"><Phone className="h-4 w-4" /> {agency.contactPhone}</p>}
               <p className="pt-2 text-xs text-muted-2">Last verified: {monthYear(agency.lastVerifiedAt)}{agency.isDemo ? " · Demo data" : ""}</p>
             </div>
+            <LiveCheck agencyId={agency.id} />
           </Card>
+
+          {!agency.isDemo && (
+            <Card className="mt-4 border-info/30 bg-info-soft/40 p-4 text-xs text-muted">
+              <p className="font-semibold text-foreground">Public listing</p>
+              <p className="mt-1">
+                Listed from publicly available information (trust level 2 — publicly observable). CASTCHECK has
+                <strong> not independently verified or endorsed</strong> this agency, and inclusion is not a
+                recommendation. Always confirm details on the agency&rsquo;s official site and evaluate any
+                representation offer yourself.
+              </p>
+            </Card>
+          )}
         </div>
 
         <aside className="lg:sticky lg:top-20 lg:self-start">
