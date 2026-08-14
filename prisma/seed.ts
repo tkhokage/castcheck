@@ -203,6 +203,7 @@ async function main() {
       submissionRequirements: ["Current photo", "Sizes", "Availability"],
       deadlineDays: 3,
       contactName: "Central Casting Atlanta",
+      contactEmail: "extras@centralcastingatl.example",
       source: "Casting professional (verified poster)",
       trustLevel: 4, likelihood: 1, impact: 2, verificationState: "verified",
       checks: [

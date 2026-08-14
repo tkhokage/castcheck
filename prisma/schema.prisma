@@ -137,13 +137,14 @@ model Opportunity {
 
   description        String?
   submissionMethod   String?
+  submissionUrl      String?  // direct "submit / apply" link
   submissionRequirements Json? // string[]
   deadline           DateTime?
   contactName        String?
   contactEmail       String?
   contactPhone       String?
-  source             String?
-  sourceUrl          String?
+  source             String?  // where it came from
+  sourceUrl          String?  // link to the original listing / info
 
   // Trust & verification (Phase 2)
   verificationState  String   @default("needs_review") // verified | partial | needs_review | flagged | high_risk | rejected
@@ -242,6 +243,7 @@ model Agency {
   representationSpecialties Json? // string[]  film/tv, commercial, theater, voice, ...
   marketsServed          Json?    // string[]
   submissionMethod       String?  // open | referral | closed
+  submissionUrl          String?  // direct "submit / get seen" link
   submissionRequirements Json?    // string[]
   commission             String?
   fees                   String?  // fee policy / disclosure

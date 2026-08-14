@@ -7,6 +7,7 @@ import { Card, Badge, LinkButton } from "@/components/ui";
 import { VerificationBadge, RiskBadge, TrustLevelBadge } from "@/components/badges";
 import { SaveButton, TrackButton, ReportDialog } from "@/components/opportunity-actions";
 import { LiveCheck } from "@/components/live-check";
+import { SubmitPanel } from "@/components/submit-panel";
 import { CHECK_STATUS_ICON, LIKELIHOOD_LABELS, IMPACT_LABELS, riskScore } from "@/lib/risk";
 import { careerFit } from "@/lib/matching";
 import { riskNarrative, fitNarrative, aiEnabled } from "@/lib/ai";
@@ -205,6 +206,19 @@ export default async function OpportunityDetail({ params }: PageProps<"/opportun
               <ReportDialog id={opp.id} />
             </div>
           </Card>
+
+          {/* How to submit */}
+          <SubmitPanel
+            title={opp.title}
+            submissionMethod={opp.submissionMethod}
+            submissionUrl={opp.submissionUrl}
+            contactEmail={opp.contactEmail}
+            contactName={opp.contactName}
+            sourceUrl={opp.sourceUrl}
+            originalLabel="View the original listing"
+            requirements={requirements.map(String)}
+            deadline={opp.deadline}
+          />
 
           {/* Career fit */}
           <Card className="p-5">

@@ -6,6 +6,7 @@ import { Card, Badge } from "@/components/ui";
 import { VerificationBadge, TrustLevelBadge } from "@/components/badges";
 import { agencyMatch } from "@/lib/matching";
 import { LiveCheck } from "@/components/live-check";
+import { SubmitPanel } from "@/components/submit-panel";
 import { asList, monthYear } from "@/lib/utils";
 import { ArrowLeft, MapPin, Globe, Mail, Phone, AlertTriangle, Briefcase } from "lucide-react";
 
@@ -101,7 +102,17 @@ export default async function AgencyDetail({ params }: PageProps<"/agencies/[id]
           )}
         </div>
 
-        <aside className="lg:sticky lg:top-20 lg:self-start">
+        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+          <SubmitPanel
+            title={agency.name}
+            submissionMethod={agency.submissionMethod === "open" ? "Open submissions — you can submit directly." : agency.submissionMethod === "referral" ? "Referral preferred — a referral improves your chances." : agency.submissionMethod}
+            submissionUrl={agency.submissionUrl}
+            contactEmail={agency.contactEmail}
+            sourceUrl={agency.website}
+            originalLabel="Visit official site"
+            requirements={reqs}
+          />
+
           <Card className="p-5">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold">Your match</h2>
