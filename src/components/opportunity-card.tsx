@@ -32,9 +32,11 @@ export function OpportunityCard({ opp }: { opp: OppCardData }) {
   return (
     <Card className="group flex flex-col p-5 transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-muted">
-          <Film className="h-3.5 w-3.5" />
-          {opp.type}
+        <div className="flex flex-col gap-1">
+          <span className="inline-flex w-fit items-center gap-1 rounded bg-primary-soft px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+            <Film className="h-3 w-3" /> Casting call
+          </span>
+          <span className="text-xs font-medium uppercase tracking-wide text-muted">{opp.type}</span>
         </div>
         <RiskBadge level={opp.riskLevel} />
       </div>

@@ -19,7 +19,7 @@ export function can(role: Role | undefined | null, cap: Capability): boolean {
   return (CAPABILITIES[cap] as readonly string[]).includes(role);
 }
 
-// Navigation visibility helper.
-export function isStaff(role: Role | undefined | null): boolean {
+// Navigation visibility helper. Accepts a raw string (Prisma `role`) too.
+export function isStaff(role: string | undefined | null): boolean {
   return !!role && ["moderator", "support", "grc", "admin"].includes(role);
 }

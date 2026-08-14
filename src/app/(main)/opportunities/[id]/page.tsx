@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
+import { isStaff } from "@/lib/rbac";
 import { Card, Badge, LinkButton } from "@/components/ui";
 import { VerificationBadge, RiskBadge, TrustLevelBadge } from "@/components/badges";
 import { SaveButton, TrackButton, ReportDialog } from "@/components/opportunity-actions";
@@ -30,6 +31,11 @@ export default async function OpportunityDetail({ params }: PageProps<"/opportun
     },
   });
   if (!opp) notFound();
+
+  // Imported listings are private to the person who imported them (staff can also see).
+  if (opp.status === "imported" && opp.createdById !== user?.id && !isStaff(user?.role)) {
+    notFound();
+  }
 
   const profile = user?.profile ?? null;
   const fit = profile

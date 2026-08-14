@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { DiscoverFilters } from "./filters";
@@ -43,11 +44,16 @@ export default async function DiscoverPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold tracking-tight">Discover</h1>
-        <p className="mt-1 text-muted">
-          {opps.length} opportunit{opps.length === 1 ? "y" : "ies"} · filtered against evidence, ranked by verification.
-        </p>
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <span className="inline-flex items-center gap-1 rounded bg-primary-soft px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-primary">Casting calls</span>
+          <h1 className="mt-1.5 text-3xl font-extrabold tracking-tight">Casting calls</h1>
+          <p className="mt-1 text-muted">
+            {opps.length} call{opps.length === 1 ? "" : "s"} · filtered against evidence, ranked by verification.
+            Looking for representation instead? <Link href="/agencies" className="font-medium text-primary hover:underline">Browse agencies</Link>.
+          </p>
+        </div>
+        <Link href="/find" className="text-sm font-semibold text-primary hover:underline">+ Find calls on other sites</Link>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[320px_1fr]">

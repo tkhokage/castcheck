@@ -20,6 +20,9 @@ export function AgencyCard({ agency }: { agency: AgencyCardData }) {
 
   return (
     <Card className="flex flex-col p-5 transition-shadow hover:shadow-md">
+      <span className="mb-2 inline-flex w-fit items-center gap-1 rounded bg-accent-soft px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-accent">
+        <Briefcase className="h-3 w-3" /> Agency
+      </span>
       <div className="flex items-start justify-between gap-2">
         <Link href={`/agencies/${agency.id}`} className="font-semibold leading-snug hover:text-primary">
           {agency.name}

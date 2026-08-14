@@ -16,7 +16,10 @@ export default async function ModerationPage() {
 
   const [queue, reports] = await Promise.all([
     db.opportunity.findMany({
-      where: { OR: [{ status: { in: ["flagged", "draft"] } }, { verificationState: { in: ["needs_review", "flagged", "high_risk"] } }] },
+      where: {
+        status: { not: "imported" }, // private actor imports never enter moderation
+        OR: [{ status: { in: ["flagged", "draft"] } }, { verificationState: { in: ["needs_review", "flagged", "high_risk"] } }],
+      },
       include: { riskIndicators: true, _count: { select: { reports: true } } },
       orderBy: { createdAt: "desc" },
     }),

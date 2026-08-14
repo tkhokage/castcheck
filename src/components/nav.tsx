@@ -8,11 +8,11 @@ import { logout } from "@/app/actions/auth";
 import { ShieldCheck } from "lucide-react";
 
 const NAV_LINKS = [
-  { href: "/discover", label: "Discover" },
+  { href: "/find", label: "Find calls" },
+  { href: "/discover", label: "Casting calls" },
   { href: "/agencies", label: "Agencies" },
   { href: "/contracts", label: "Contracts" },
   { href: "/tracker", label: "Tracker" },
-  { href: "/knowledge", label: "Help" },
 ];
 
 export async function Nav() {
