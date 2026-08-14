@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { Card, Badge, LinkButton } from "@/components/ui";
+import { FurtherReading } from "@/components/further-reading";
 import { ArrowLeft } from "lucide-react";
 
 export async function generateMetadata({ params }: PageProps<"/knowledge/[slug]">) {
@@ -33,6 +34,8 @@ export default async function ArticlePage({ params }: PageProps<"/knowledge/[slu
       <Card className="mt-6 p-6">
         <p className="whitespace-pre-line leading-relaxed">{article.body}</p>
       </Card>
+
+      <FurtherReading />
 
       {related.length > 0 && (
         <div className="mt-8">
