@@ -26,4 +26,4 @@ real agency seeding landed).
 | G6 | /privacy + /terms; contact + security.txt (placeholder addrs, see TODO) | ✅ |
 | G7 | Accessibility pass (aria, alt, focus, contrast) | ✅ |
 | G8 | Knowledge-base outbound "verify independently" links | ✅ |
-| G9 | Full deploy + post-deploy + regression checklists | ⬜ |
+| G9 | Full deploy + post-deploy + regression checklists | 🔶 config ready; live deploy needs user's Vercel/DB/email creds |

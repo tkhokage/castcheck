@@ -54,23 +54,31 @@ To load demo data once: `docker compose run --rm migrate npx prisma db seed`.
 
 ## Option B — Vercel (managed, recommended for a live URL)
 
-Vercel needs **your** account login, so run these yourself:
+Vercel needs **your** account login, so do the account steps yourself. The repo
+is already Vercel-ready: a `vercel-build` script (in `package.json`) switches
+Prisma to Postgres, generates the client, runs `prisma migrate deploy`, and
+builds — Vercel runs it automatically, so you don't have to script the build.
 
-1. Create a Postgres database (e.g. Neon) and copy its connection string.
-2. In the project: `npm i -g vercel && vercel link`.
-3. Add env vars (Project → Settings → Environment Variables):
-   `DATABASE_URL`, `AUTH_SECRET`, and optionally `ANTHROPIC_API_KEY`.
-4. Point Prisma at Postgres and apply the schema:
-   ```bash
-   npm run db:use:postgres
-   npx prisma migrate deploy      # against your production DATABASE_URL
-   npm run db:seed                # optional demo data
-   ```
-5. Deploy: `vercel --prod`.
+1. Create a managed Postgres DB (e.g. [Neon](https://neon.tech)) and copy its
+   connection string (`...?sslmode=require`).
+2. Import `github.com/tkhokage/castcheck` into Vercel (New Project → Import).
+3. Add Environment Variables (Project → Settings → Environment Variables):
+   - **Required:** `DATABASE_URL` (your Postgres URL), `AUTH_SECRET` (generate:
+     `node -e "console.log(require('crypto').randomBytes(48).toString('base64url'))"`),
+     `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS=false`.
+   - **Email (required for reset/verification):** `EMAIL_PROVIDER_API_KEY`,
+     `EMAIL_FROM`, `APP_URL` (your Vercel URL). See the email prerequisite above.
+   - **Storage:** add Vercel Blob (Storage → Blob) — `BLOB_READ_WRITE_TOKEN` is
+     injected automatically.
+   - **Rate limiting:** `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`.
+   - Optional: `ANTHROPIC_API_KEY`.
+4. Deploy. `vercel-build` runs migrations against your DB and builds.
+5. Seed demo data once (optional), from your machine with the prod `DATABASE_URL`
+   exported: `npm run db:use:postgres && npm run db:seed`.
 
-> `npm run db:use:postgres` rewrites the Prisma datasource provider to
-> `postgresql`. Commit that change for the production branch (or run it in the
-> build step). Use `npm run db:use:sqlite` to switch back for local dev.
+> Local dev stays on SQLite — `vercel-build` only flips the provider inside
+> Vercel's ephemeral build. Use `npm run db:use:sqlite` if you ever switch it
+> locally.
 
 ## Option C — Any Node host / VPS
 
@@ -90,10 +98,23 @@ Put it behind a reverse proxy (Nginx/Caddy) with TLS. Point health checks at
 
 ## Post-deploy checklist
 
-- [ ] `AUTH_SECRET` is a strong, unique value (not the dev default).
+Enforced by the codebase (verify once live):
+
+- [ ] `AUTH_SECRET` is a strong, unique value — the app **refuses to boot**
+      otherwise in production (fail-closed, G2).
+- [ ] `NEXT_PUBLIC_SHOW_DEMO_ACCOUNTS` is `false` so no demo creds show (G2).
 - [ ] `DATABASE_URL` uses TLS (`sslmode=require` for managed Postgres).
-- [ ] Migrations applied (`prisma migrate deploy`).
+- [ ] Migrations applied — `vercel-build` runs `prisma migrate deploy` (G9).
 - [ ] `/api/health` returns 200.
+- [ ] `EMAIL_PROVIDER_API_KEY` + `EMAIL_FROM` + `APP_URL` set — a real
+      verification email arrives on sign-up, and password reset emails send (G3).
+- [ ] `BLOB_READ_WRITE_TOKEN` set — an uploaded headshot persists across a
+      redeploy (object storage, G4).
+- [ ] `UPSTASH_REDIS_REST_URL` / `_TOKEN` set — rate limiting shared across
+      instances (G4).
+- [ ] `/privacy` and `/terms` reachable from the footer; a bad URL renders the
+      branded 404 (G5/G6).
+- [ ] Replace the placeholder `contact@` / `security@castcheck.example` addresses
+      (`src/lib/constants.ts` + `/.well-known/security.txt`) with real, monitored
+      inboxes on your domain (G6 TODO).
 - [ ] Rotate/curate demo data or start clean (see [roadmap.md](roadmap.md) Phase 6).
-- [ ] Move uploads to object storage and the rate limiter to Redis for scale
-      (see [security.md](security.md)).

@@ -70,4 +70,6 @@ have to do extra work. Live status tracked in `AGENTS.md`.
 - **G7 ✅** Accessibility (aria labels, alt text, focus, contrast — badge tones
   audited and adjusted to meet WCAG AA in light and dark).
 - **G8 ✅** Knowledge-base outbound "verify independently" links (FTC, SAG-AFTRA, BBB).
-- **G9** Full deploy + post-deploy + regression verification.
+- **G9 🔶** Deploy config ready (one-step `vercel-build`, updated post-deploy
+  checklist). The live deploy itself needs the operator's Vercel + Postgres +
+  email credentials.
