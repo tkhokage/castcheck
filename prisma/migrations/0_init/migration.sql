@@ -1,4 +1,4 @@
-﻿-- CreateSchema
+-- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
 -- CreateTable
@@ -10,13 +10,32 @@ CREATE TABLE "User" (
     "role" TEXT NOT NULL DEFAULT 'actor',
     "mfaEnabled" BOOLEAN NOT NULL DEFAULT false,
     "mfaSecret" TEXT,
+    "mfaRecoveryCodes" JSONB,
     "emailVerified" TIMESTAMP(3),
     "verifyToken" TEXT,
+    "resetToken" TEXT,
+    "resetTokenExpiry" TIMESTAMP(3),
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "ContractAnalysis" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "source" TEXT,
+    "findings" JSONB NOT NULL,
+    "flagCount" INTEGER NOT NULL DEFAULT 0,
+    "cautionCount" INTEGER NOT NULL DEFAULT 0,
+    "commissionPct" INTEGER,
+    "summary" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "ContractAnalysis_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -84,6 +103,7 @@ CREATE TABLE "Opportunity" (
     "unionStatus" TEXT,
     "description" TEXT,
     "submissionMethod" TEXT,
+    "submissionUrl" TEXT,
     "submissionRequirements" JSONB,
     "deadline" TIMESTAMP(3),
     "contactName" TEXT,
@@ -171,6 +191,7 @@ CREATE TABLE "Agency" (
     "representationSpecialties" JSONB,
     "marketsServed" JSONB,
     "submissionMethod" TEXT,
+    "submissionUrl" TEXT,
     "submissionRequirements" JSONB,
     "commission" TEXT,
     "fees" TEXT,
@@ -274,6 +295,9 @@ CREATE TABLE "Incident" (
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
+CREATE INDEX "ContractAnalysis_userId_idx" ON "ContractAnalysis"("userId");
+
+-- CreateIndex
 CREATE INDEX "AuditLog_action_idx" ON "AuditLog"("action");
 
 -- CreateIndex
@@ -305,6 +329,9 @@ CREATE UNIQUE INDEX "KnowledgeArticle_slug_key" ON "KnowledgeArticle"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Incident_reference_key" ON "Incident"("reference");
+
+-- AddForeignKey
+ALTER TABLE "ContractAnalysis" ADD CONSTRAINT "ContractAnalysis_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "AuditLog" ADD CONSTRAINT "AuditLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -344,4 +371,3 @@ ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_userId_fkey" FOREIGN KEY ("userId") 
 
 -- AddForeignKey
 ALTER TABLE "Ticket" ADD CONSTRAINT "Ticket_assignedId_fkey" FOREIGN KEY ("assignedId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
