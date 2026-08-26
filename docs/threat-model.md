@@ -13,7 +13,7 @@ database resources.
 | # | Threat | Vector | Mitigation |
 |---|--------|--------|------------|
 | T1 | **Fake casting call** defrauds actors | Malicious submission | Verification pipeline + automated screening (`screen.ts`) + moderation + report→ticket workflow |
-| T2 | **Account takeover** | Credential theft, phishing | bcrypt hashing, httpOnly signed sessions, MFA-ready design, audit of auth events |
+| T2 | **Account takeover** | Credential theft, phishing | bcrypt hashing, httpOnly signed sessions, TOTP MFA + recovery codes, audit of auth events |
 | T3 | **Data exposure** of actor PII | Broken access control | Ownership checks on all user-scoped queries/mutations; RBAC; data minimization |
 | T4 | **Privilege escalation** | Forced browsing to staff routes | Server-side `can()` checks on every dashboard route and privileged action |
 | T5 | **Malicious agency** (pay-to-play) | Fraudulent directory entry | Fee-pattern detection, verification state, trust level, "Charges talent" warning |

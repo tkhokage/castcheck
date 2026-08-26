@@ -70,5 +70,5 @@ works in both. `src/lib/utils.ts#asList` reads them safely.
 - **Server Actions over a REST layer** — less boilerplate, type-safe end to end,
   and mutations live next to the pages that use them.
 - **Custom auth over a library** — full control of the session shape and RBAC on
-  bleeding-edge Next 16, and a clean MFA-ready seam.
+  bleeding-edge Next 16, and a clean seam for the implemented TOTP MFA.
 - **SQLite locally, Postgres in prod** — zero-config preview; one-line switch.

@@ -27,3 +27,12 @@ real agency seeding landed).
 | G7 | Accessibility pass (aria, alt, focus, contrast) | ✅ |
 | G8 | Knowledge-base outbound "verify independently" links | ✅ |
 | G9 | Full deploy + post-deploy + regression checklists | 🔶 config ready; live deploy needs user's Vercel/DB/email creds |
+
+## CASTCHECK 2.0 — program / PM case-study layer
+
+A documentation program layer over the build (charter, WBS, RAID, stakeholders/
+RACI, plan, change control, decision log, OKRs, releases, UAT, budget, exec
+dashboard, program roadmap, retrospectives, GitHub-project setup, and the
+recruiter-facing `docs/pm-case-study.md`). Everything is grounded in the real
+build; keep the docs in sync when the code changes. Resolved issue I-01
+(MFA-ready vs shipped TOTP MFA) → docs now state the implemented control.

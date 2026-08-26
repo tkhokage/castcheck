@@ -3,6 +3,12 @@
 CASTCHECK is built in phases. Phases 1–5 are implemented in this build; Phase 6
 and the later AI modules are designed and staged.
 
+> **Two views of the same work.** This is the *product* roadmap (features by
+> phase). For the *program* view — the same work organized into four parallel
+> programs with cross-program dependencies and benefits realization — see
+> [program-roadmap.md](program-roadmap.md). The full PM case-study index is in
+> [pm-case-study.md](pm-case-study.md).
+
 | Phase | Build | Status |
 |-------|-------|--------|
 | **1 — MVP** | Landing, registration, profile, feed, search, filters, detail page, save, tracker, demo data | ✅ Done |

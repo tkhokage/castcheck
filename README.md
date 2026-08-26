@@ -18,6 +18,22 @@ DISCOVER → VERIFY → EVALUATE → APPLY → TRACK
 > demo data. CASTCHECK is not affiliated with any real casting service and does
 > not scrape casting boards. See [Real data strategy](#real-data-strategy).
 
+> 📋 **Not a coder? Start here.** CASTCHECK is also a **technical program /
+> project management case study**. Read
+> **[docs/pm-case-study.md](docs/pm-case-study.md)** for the non-technical story —
+> business problem, program structure, stakeholders, timeline, risks, decisions,
+> delivery, results — with links down into the technical detail. It maps to
+> Project Coordinator → Technical PC → PM → Program Manager competencies.
+
+---
+
+## Two layers of proof
+
+| Layer | For | Entry point |
+|-------|-----|-------------|
+| **Executive / PM** | Recruiters, PMs, sponsors | [PM case study](docs/pm-case-study.md) · [charter](docs/project-charter.md) · [executive dashboard](docs/executive-dashboard.md) |
+| **Technical** | Engineers, security, GRC | [architecture](docs/architecture.md) · [security](docs/security.md) · [threat model](docs/threat-model.md) · source in `src/` |
+
 ---
 
 ## What it demonstrates
@@ -75,7 +91,7 @@ All accounts use the password **`demo1234`**:
 - **TypeScript** + **Tailwind CSS v4** (light/dark themes)
 - **Prisma 6** ORM with **SQLite** locally (swap to Postgres for production)
 - **Custom auth** — `bcryptjs` password hashing + `jose` JWT session cookies
-  (httpOnly, MFA-ready architecture)
+  (httpOnly sessions; TOTP MFA with single-use recovery codes)
 - **Zod** for input validation
 - **Anthropic SDK** for the optional AI layer (rule-based fallbacks when no key)
 - **lucide-react** icons
@@ -146,6 +162,29 @@ live until it genuinely is. See [`docs/roadmap.md`](docs/roadmap.md).
 
 ## Documentation
 
+**Program / project management (the PM case study):**
+
+| Doc | Covers |
+|-----|--------|
+| [pm-case-study.md](docs/pm-case-study.md) | **Start here** — the non-technical narrative + role mapping |
+| [project-charter.md](docs/project-charter.md) | Problem, objective, outcome-based success criteria |
+| [work-breakdown-structure.md](docs/work-breakdown-structure.md) | WBS by workstream, with status |
+| [raid-log.md](docs/raid-log.md) | Risks, Assumptions, Issues, Dependencies |
+| [stakeholder-management.md](docs/stakeholder-management.md) | Stakeholder register + RACI matrices |
+| [project-plan.md](docs/project-plan.md) | 16-week schedule + Gantt + dependencies |
+| [program-roadmap.md](docs/program-roadmap.md) | Four-program view of the same work |
+| [change-management.md](docs/change-management.md) | Change-request log & control |
+| [decision-log.md](docs/decision-log.md) | Governed architectural/program decisions |
+| [program-okrs.md](docs/program-okrs.md) | Objectives & key results (outcomes) |
+| [release-management.md](docs/release-management.md) | Releases, go/no-go, rollback |
+| [uat-plan.md](docs/uat-plan.md) | UAT scenarios by role, results |
+| [budget.md](docs/budget.md) | Illustrative budget: planned vs actual vs variance |
+| [executive-dashboard.md](docs/executive-dashboard.md) | 30-second program-health view |
+| [github-project-setup.md](docs/github-project-setup.md) | Running the repo as a GitHub Project |
+| [retrospectives/](docs/retrospectives/) | Phase retros (lessons learned) |
+
+**Technical:**
+
 | Doc | Covers |
 |-----|--------|
 | [architecture.md](docs/architecture.md) | System design, data model, request flow |
@@ -155,7 +194,7 @@ live until it genuinely is. See [`docs/roadmap.md`](docs/roadmap.md).
 | [grc.md](docs/grc.md) | Risk register, controls, incident response |
 | [support-workflow.md](docs/support-workflow.md) | Ticketing, priorities, resolution |
 | [ai-limitations.md](docs/ai-limitations.md) | What the AI does and never does |
-| [roadmap.md](docs/roadmap.md) | Phases 1–6 |
+| [roadmap.md](docs/roadmap.md) | Phases 1–6 (product) |
 | [testing.md](docs/testing.md) | How this build was verified |
 | [deployment.md](docs/deployment.md) | Docker, Vercel, and VPS deploy paths |
 
