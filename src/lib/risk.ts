@@ -34,6 +34,7 @@ export function deriveVerificationState(
   const failed = checks.filter((c) => c.status === "fail").length;
 
   if (hasHighRiskIndicators || failed >= 2) return { state: "high_risk", passed, total };
+  if (total === 0) return { state: "needs_review", passed, total };
   if (failed >= 1) return { state: "flagged", passed, total };
   if (total > 0 && passed === total) return { state: "verified", passed, total };
   if (passed >= Math.ceil(total / 2)) return { state: "partial", passed, total };
