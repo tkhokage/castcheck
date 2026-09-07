@@ -3,7 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { isStaff } from "@/lib/rbac";
-import { Card, Badge, LinkButton } from "@/components/ui";
+import { Card, Badge } from "@/components/ui";
 import { VerificationBadge, RiskBadge, TrustLevelBadge } from "@/components/badges";
 import { SaveButton, TrackButton, ReportDialog } from "@/components/opportunity-actions";
 import { LiveCheck } from "@/components/live-check";
@@ -303,7 +303,7 @@ export default async function OpportunityDetail({ params, searchParams }: PagePr
   );
 }
 
-function Detail({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value?: string | null }) {
+function Detail({ icon: Icon, label, value }: { icon: React.ElementType<{ className?: string }>; label: string; value?: string | null }) {
   if (!value) return null;
   return (
     <div className="flex items-start gap-2">

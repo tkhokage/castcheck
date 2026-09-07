@@ -1,3 +1,5 @@
+import { AgencyDistrict } from "@/components/agency-district/agency-district";
+import { districtAgency } from "@/lib/agency-district";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
 import { AgencyFilters } from "./filters";
@@ -52,6 +54,8 @@ export default async function AgenciesPage({
         </Card>
       )}
 
+      <AgencyDistrict agencies={withMatch.map(({ agency, match }) => districtAgency(agency, match))} />
+      <div id="agency-list" className="scroll-mt-6" />
       {withMatch.length === 0 ? (
         <div className="mt-8"><EmptyState title="No agencies match" hint="Try a different location or representation type." /></div>
       ) : (

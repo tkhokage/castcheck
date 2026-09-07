@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { Card, Stat } from "@/components/ui";
+import { Stat } from "@/components/ui";
 import Link from "next/link";
 
 export const metadata = { title: "Operations overview" };
