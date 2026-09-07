@@ -64,3 +64,6 @@ options considered, the decision, the rationale, an owner, and a date.
   operator only sets env vars. · **Rationale:** lowest-friction path to a live URL
   matching the team's stack; keeps local dev on SQLite.
 - **Owner:** Platform / PM · **Date:** 2026-08
+
+### DEC-009 — Optional Agency District (2026-09-06)
+User problem: compare agencies without losing trust context. Options: replace directory, add opt-in 3D, retain list only. Decision: opt-in primitive 3D with the existing list and matching authoritative. Evidence: local unit/build/browser checks; no measured usability benefit yet. AI-assisted implementation; owner role: Product/Engineering. See agency-district.md.

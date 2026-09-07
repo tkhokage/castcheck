@@ -8,7 +8,7 @@ import { Upload, FileText, Video, Check, Loader2 } from "lucide-react";
 
 type Kind = "headshot" | "resume" | "reel";
 
-const META: Record<Kind, { title: string; accept: string; hint: string; icon: React.ElementType }> = {
+const META: Record<Kind, { title: string; accept: string; hint: string; icon: React.ElementType<{ className?: string }> }> = {
   headshot: { title: "Headshot", accept: "image/png,image/jpeg,image/webp", hint: "PNG/JPG/WebP · up to 5MB", icon: Upload },
   resume: { title: "Resume", accept: "application/pdf", hint: "PDF · up to 10MB", icon: FileText },
   reel: { title: "Demo reel", accept: "video/mp4,video/quicktime,video/webm", hint: "MP4/MOV/WebM · up to 10MB", icon: Video },
