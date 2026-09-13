@@ -14,6 +14,8 @@ Validation on this checkout: 103 unit tests across 16 files pass; lint and produ
 
 External blockers: Railway rejected dedicated-project creation because the account trial expired. A plan must be activated. Real PostgreSQL, verified transactional sender, durable Blob storage, Upstash Redis, HTTPS APP_URL, and monitored contact/security inboxes are not configured. The preflight correctly fails. PostgreSQL migrations, real email/storage/Redis, allowed casting source integrations, complete upload/reset/report flows, deployment and rollback still require verification. No production completion is claimed.
 
+Publication and final local checks: implementation commit c0e7c43 is pushed to `codex/castcheck-production-rebuild`; draft PR #3 is open at https://github.com/tkhokage/castcheck/pull/3. GitHub CI run 34777581522 passed dependency installation, lint, unit tests and build. The production smoke now passes seven public routes/database health and all three login boundaries, including Next.js streamed redirects. Extended actor browser coverage also passes local headshot upload/profile persistence and password reset/token consumption. Real service delivery and reporting coverage remain pending.
+
 Date: September 11, 2026. Status: **release work in progress; not deployed**.
 
 ## Completed implementation

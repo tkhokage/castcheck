@@ -22,6 +22,9 @@ async function register(page, address) {
 }
 try {
   await register(a,email); console.log('PASS signup and actor profile redirect');
+  await a.locator('input[type=file]').first().setInputFiles('public/world/preview.png');
+  await a.getByRole('img',{name:'Your uploaded headshot',exact:true}).waitFor();
+  await a.reload(); await a.getByRole('img',{name:'Your uploaded headshot',exact:true}).waitFor(); console.log('PASS local headshot upload and persisted profile reference');
   const user = await db.user.findUniqueOrThrow({where:{email}});
   await a.goto(`${base}/verify?token=${user.verifyToken}`);
   assert.ok((await db.user.findUniqueOrThrow({where:{email}})).emailVerified); console.log('PASS verification token flow (local token, no email delivery claim)');
@@ -34,5 +37,11 @@ try {
   await a.goto(`${base}/login`); await a.locator('[name=email]').fill(email); await a.locator('[name=password]').fill(password); await a.getByRole('button',{name:'Sign in',exact:true}).click(); await a.locator('[name=code]').waitFor();
   // React resets successful action form fields; refill if necessary.
   await a.locator('[name=email]').fill(email); await a.locator('[name=password]').fill(password); await a.locator('[name=code]').fill(recovery.trim()); await a.getByRole('button',{name:'Verify & sign in',exact:true}).click(); await a.waitForURL('**/discover',{timeout:60000}); console.log('PASS MFA enrollment and recovery-code login');
+  const resetPage = await browser.newPage();
+  await resetPage.goto(`${base}/forgot-password`); await resetPage.locator('[name=email]').fill(email); await resetPage.getByRole('button',{name:'Send reset link',exact:true}).click();
+  await resetPage.getByText(/If an account exists for that email/).waitFor();
+  const resetUser=await db.user.findUniqueOrThrow({where:{email}}); assert.ok(resetUser.resetToken);
+  await resetPage.goto(`${base}/reset-password?token=${resetUser.resetToken}`); await resetPage.locator('[name=password]').fill(password+'-new'); await resetPage.getByRole('button',{name:'Set new password',exact:true}).click(); await resetPage.getByText('Your password has been reset. You can sign in with your new password.',{exact:true}).waitFor();
+  assert.equal((await db.user.findUniqueOrThrow({where:{email}})).resetToken,null); console.log('PASS password reset and token consumption (local, no email delivery claim)');
   assert.deepEqual(errors,[]);
 } finally { await browser.close(); await db.$disconnect(); }
