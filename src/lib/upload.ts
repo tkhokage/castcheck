@@ -70,6 +70,9 @@ export async function saveUpload(file: File, kind: UploadKind, userId: string): 
     }
   }
 
+  if (process.env.NODE_ENV === "production") {
+    return { ok: false, error: "Uploads are temporarily unavailable. Please try again later." };
+  }
   const dir = path.join(process.cwd(), "public", "uploads");
   await mkdir(dir, { recursive: true });
   await writeFile(path.join(dir, name), bytes);

@@ -1,4 +1,5 @@
 import "server-only";
+import { fetchPublicPage } from "./public-web";
 
 // Live source verification. The app fetches a listing's linked website at runtime
 // and derives real evidence signals: does it resolve, does the contact email's
@@ -36,13 +37,10 @@ function normalizeUrl(raw: string | null | undefined): string | null {
   }
 }
 
-/** Registrable-ish domain: last two labels of the hostname (good enough for a demo). */
+/** Compare exact normalized hosts; never collapse unrelated sites under co.uk. */
 function registrableDomain(host: string | null): string | null {
   if (!host) return null;
-  const h = host.replace(/^www\./i, "").toLowerCase();
-  const parts = h.split(".");
-  if (parts.length <= 2) return h;
-  return parts.slice(-2).join(".");
+  return host.replace(/^www\./i, "").toLowerCase();
 }
 
 function hostOf(url: string | null): string | null {
@@ -54,25 +52,9 @@ function hostOf(url: string | null): string | null {
   }
 }
 
-async function fetchSite(url: string, timeoutMs = 8000): Promise<{ status: number; finalUrl: string; text: string } | null> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetch(url, {
-      redirect: "follow",
-      signal: controller.signal,
-      headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; CastcheckVerifier/1.0; +https://castcheck.app)",
-        Accept: "text/html,application/xhtml+xml",
-      },
-    });
-    const text = (await res.text()).slice(0, 200_000);
-    return { status: res.status, finalUrl: res.url || url, text };
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timer);
-  }
+async function fetchSite(url: string) {
+  try { return await fetchPublicPage(url); }
+  catch { return null; }
 }
 
 export async function verifyWebsite(input: {
@@ -89,11 +71,11 @@ export async function verifyWebsite(input: {
   const notes: string[] = [];
 
   if (!normalizedUrl) {
-    notes.push("No official website was provided to check. Absence of a website is itself a caution.");
+    notes.push("No usable official website was provided. Website evidence is unavailable.");
     return {
       input: input.url ?? "", normalizedUrl: null, reachable: false, status: null, finalUrl: null,
       siteDomain: null, emailDomain, domainMatch: "unknown", mentionsEntity: null,
-      verdict: "fail", notes, checkedAt,
+      verdict: "warn", notes, checkedAt,
     };
   }
 
@@ -102,16 +84,16 @@ export async function verifyWebsite(input: {
     notes.push(
       fetched ? `The website responded with HTTP ${fetched.status}.` : "The website did not respond (unreachable or blocked).",
     );
-    notes.push("A listing whose 'official' site does not load is a strong warning sign — verify the organization elsewhere.");
+    notes.push("The check is inconclusive. Timeouts, access restrictions, and source errors do not establish fraud. Check another independent source.");
     return {
       input: input.url ?? "", normalizedUrl, reachable: false, status: fetched?.status ?? null,
       finalUrl: fetched?.finalUrl ?? null, siteDomain: registrableDomain(hostOf(normalizedUrl)), emailDomain,
-      domainMatch: "unknown", mentionsEntity: null, verdict: "fail", notes, checkedAt,
+      domainMatch: "unknown", mentionsEntity: null, verdict: "warn", notes, checkedAt,
     };
   }
 
   const siteDomain = registrableDomain(hostOf(fetched.finalUrl));
-  notes.push(`The website loaded (HTTP ${fetched.status}).`);
+  notes.push(`The website loaded (HTTP ${fetched.status}). This is a technical check, not proof of legitimacy.`);
 
   let domainMatch: WebVerifyResult["domainMatch"] = "unknown";
   if (emailDomain && siteDomain) {

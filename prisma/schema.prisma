@@ -148,6 +148,8 @@ model Opportunity {
   contactPhone       String?
   source             String?  // where it came from
   sourceUrl          String?  // link to the original listing / info
+  sourceEvidence     Json?    // signed source preview provenance, never a trust verdict
+  importKey          String?  @unique // actor + normalized source URL
 
   // Trust & verification (Phase 2)
   verificationState  String   @default("needs_review") // verified | partial | needs_review | flagged | high_risk | rejected

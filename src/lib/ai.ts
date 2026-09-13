@@ -1,5 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
+import { z } from "zod";
 import { TICKET_CATEGORIES, TICKET_PRIORITIES } from "./constants";
 
 // The AI layer assists human decisions. It never invents entities or evidence,
@@ -14,7 +15,7 @@ export function aiEnabled(): boolean {
 
 function client(): Anthropic | null {
   if (!process.env.ANTHROPIC_API_KEY) return null;
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, timeout: 12000, maxRetries: 1 });
 }
 
 async function complete(system: string, user: string): Promise<string | null> {
@@ -80,8 +81,9 @@ export async function triageTicket(subject: string, description: string): Promis
   if (!raw) return fallback;
   try {
     const parsed = JSON.parse(raw.slice(raw.indexOf("{"), raw.lastIndexOf("}") + 1));
-    if (parsed.category && parsed.priority) {
-      return { data: parsed, source: "ai", confidence: "medium", note: "AI-assisted suggestion. A human analyst confirms the final category and priority." };
+    const validated = z.object({ category: z.enum(TICKET_CATEGORIES), priority: z.enum(TICKET_PRIORITIES), reason: z.string().min(1).max(2000) }).safeParse(parsed);
+    if (validated.success) {
+      return { data: validated.data, source: "ai", confidence: "medium", note: "AI-assisted suggestion. A human analyst confirms the final category and priority." };
     }
   } catch {
     /* fall through */

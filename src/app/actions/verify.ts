@@ -4,11 +4,11 @@ import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { verifyWebsite, type WebVerifyResult } from "@/lib/verify-web";
+import { canReadOpportunity } from "@/lib/opportunity-access";
 import { audit } from "@/lib/audit";
 
 // Runs a LIVE website check against a listing's own stored source URL.
-// The URL comes from our database (poster/moderator controlled), never from the
-// caller — so this can't be turned into an open web-fetch proxy.
+// Stored URLs remain untrusted; public-web enforces the egress boundary.
 export async function checkOpportunityWebsite(
   opportunityId: string,
 ): Promise<{ result?: WebVerifyResult; error?: string }> {
@@ -20,9 +20,9 @@ export async function checkOpportunityWebsite(
 
   const opp = await db.opportunity.findUnique({
     where: { id: opportunityId },
-    select: { sourceUrl: true, contactEmail: true, productionCompany: true, castingEntity: true },
+    select: { sourceUrl: true, contactEmail: true, productionCompany: true, castingEntity: true, status: true, createdById: true },
   });
-  if (!opp) return { error: "Listing not found." };
+  if (!opp || !canReadOpportunity(opp, session)) return { error: "Listing not found." };
 
   const result = await verifyWebsite({
     url: opp.sourceUrl,

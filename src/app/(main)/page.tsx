@@ -1,180 +1,55 @@
 import Link from "next/link";
+import { ActorLanding } from "@/components/actor-landing";
 import { db } from "@/lib/db";
-import { LinkButton, Card, Badge } from "@/components/ui";
+import { getCurrentUser } from "@/lib/auth";
 import { OpportunityCard } from "@/components/opportunity-card";
-import {
-  Search, ShieldCheck, Target, Send, ListChecks, AlertTriangle, ArrowRight, Sparkles,
-} from "lucide-react";
+import { Card, LinkButton, EmptyState, inputClass } from "@/components/ui";
+import { Search, ArrowUpRight, ShieldCheck, Bookmark, Clapperboard, Building2 } from "lucide-react";
 
-const PIPELINE = [
-  { icon: Search, title: "Discover", text: "Find film, TV, theater, commercial, indie, student, and voice opportunities across your market." },
-  { icon: ShieldCheck, title: "Verify", text: "Every listing is checked against evidence. We never hide uncertainty." },
-  { icon: Target, title: "Evaluate", text: "See career fit and residual risk — separately, so a good fit never masks a red flag." },
-  { icon: Send, title: "Apply", text: "Submit through legitimate methods, with guidance on what to share and what to withhold." },
-  { icon: ListChecks, title: "Track", text: "Follow every submission from saved to booked in one tracker." },
-];
-
-export default async function LandingPage() {
-  const featured = await db.opportunity.findMany({
-    where: { status: "published", verificationState: { in: ["verified", "partial"] } },
-    include: { checks: { select: { status: true } } },
-    orderBy: { lastVerifiedAt: "desc" },
-    take: 3,
-  });
-
-  const [oppCount, verifiedCount, agencyCount] = await Promise.all([
-    db.opportunity.count(),
-    db.opportunity.count({ where: { verificationState: "verified" } }),
-    db.agency.count(),
+export default async function HomePage() {
+  const user = await getCurrentUser();
+  if (!user) return <ActorLanding />;
+  const current = { status: "published", isDemo: false, OR: [{ deadline: null }, { deadline: { gte: new Date() } }] };
+  const [opportunities, count, agencies, applications] = await Promise.all([
+    db.opportunity.findMany({ where: current, include: { checks: { select: { status: true } } }, orderBy: { createdAt: "desc" }, take: 6 }),
+    db.opportunity.count({ where: current }),
+    db.agency.count({ where: { isDemo: false } }),
+    user ? db.application.count({ where: { userId: user.id } }) : Promise.resolve(0),
   ]);
-
   return (
-    <div>
-      {/* Hero */}
-      <section className="hero-grid border-b border-border">
-        <div className="mx-auto max-w-6xl px-4 py-20 text-center">
-          <Badge tone="primary" className="mx-auto">
-            <Sparkles className="h-3.5 w-3.5" /> For emerging actors
-          </Badge>
-          <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-extrabold tracking-tight sm:text-5xl">
-            Find real auditions. <span className="text-primary">Avoid the scams.</span>
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-muted">
-            CASTCHECK is a trust-first hub for casting calls, indie and student film auditions, and talent-agency
-            discovery — with evidence-based verification and risk checks on every listing.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <LinkButton href="/register" className="px-6 py-3 text-base">
-              Get started free <ArrowRight className="h-4 w-4" />
-            </LinkButton>
-            <LinkButton href="/discover" variant="outline" className="px-6 py-3 text-base">
-              Browse opportunities
-            </LinkButton>
-          </div>
-          <p className="mt-6 text-sm font-semibold tracking-wide text-muted">
-            Find it. Verify it. Pursue it.
-          </p>
-
-          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-3 gap-4">
-            <Stat n={oppCount} label="Opportunities" />
-            <Stat n={verifiedCount} label="Verified" />
-            <Stat n={agencyCount} label="Agencies" />
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:py-12">
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <p className="text-sm font-semibold uppercase tracking-[0.16em] text-muted">Your casting workspace</p>
+        <Link href="/find/import" className="text-sm font-semibold text-primary">Import a call <ArrowUpRight className="inline h-4 w-4" /></Link>
+      </div>
+      <section className="grid gap-8 lg:grid-cols-[1.7fr_1fr]">
+        <div>
+          <h1 className="max-w-2xl text-4xl font-semibold leading-[1.1] tracking-tight sm:text-6xl">Make room for<br /><span className="text-primary">your next role.</span></h1>
+          <p className="mt-5 max-w-xl text-lg text-muted">Find a call. Understand the evidence. Keep your next move in one place.</p>
+          <form action="/discover" className="mt-7 flex gap-2" role="search">
+            <label className="relative min-w-0 flex-1"><span className="sr-only">Search casting calls</span><Search className="absolute left-4 top-4 h-5 w-5 text-muted" /><input name="q" placeholder="Role, production, or company" className={`${inputClass} h-14 pl-12 text-base`} /></label>
+            <button className="rounded-lg bg-primary px-5 font-semibold text-primary-fg hover:bg-primary-hover">Search</button>
+          </form>
+          <div className="mt-4 flex flex-wrap gap-2 text-sm">
+            {["Dallas", "Austin", "Los Angeles", "New York", "Remote"].map(market => <Link key={market} href={`/discover?location=${encodeURIComponent(market)}`} className="rounded-full border border-border bg-surface px-4 py-2 hover:border-primary">{market}</Link>)}
           </div>
         </div>
-      </section>
-
-      {/* Pipeline */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold tracking-tight">A pipeline, not a bulletin board</h2>
-          <p className="mx-auto mt-2 max-w-2xl text-muted">
-            Other boards just list calls. CASTCHECK walks each one through the same disciplined path.
-          </p>
-        </div>
-        <div className="mt-10 grid gap-4 md:grid-cols-5">
-          {PIPELINE.map((p, i) => (
-            <Card key={p.title} className="relative p-5">
-              <span className="absolute right-4 top-4 font-mono text-xs text-muted-2">0{i + 1}</span>
-              <span className="grid h-10 w-10 place-items-center rounded-lg bg-primary-soft text-primary">
-                <p.icon className="h-5 w-5" />
-              </span>
-              <h3 className="mt-3 font-semibold">{p.title}</h3>
-              <p className="mt-1 text-sm text-muted">{p.text}</p>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Trust callout */}
-      <section className="border-y border-border bg-surface">
-        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-16 md:grid-cols-2">
-          <div>
-            <Badge tone="danger">
-              <AlertTriangle className="h-3.5 w-3.5" /> Scam-aware by design
-            </Badge>
-            <h2 className="mt-4 text-2xl font-bold tracking-tight">
-              We flag the red flags actors miss
-            </h2>
-            <p className="mt-3 text-muted">
-              Upfront fees, gift-card payments, guaranteed roles, off-platform DMs, and requests for your SSN
-              or banking details are classic warning signs. CASTCHECK surfaces them plainly — and explains why.
-            </p>
-            <ul className="mt-5 space-y-2 text-sm">
-              {["Pay-to-audition and mandatory package fees", "Requests for SSN, ID, or banking up front", "Guaranteed employment or representation", "Unverifiable companies and domain mismatches"].map((t) => (
-                <li key={t} className="flex items-start gap-2">
-                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-danger" />
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-            <LinkButton href="/knowledge/information-to-avoid-sharing" variant="outline" className="mt-6">
-              What to never share
-            </LinkButton>
+        <Card className="flex flex-col justify-between overflow-hidden p-6 sm:p-8">
+          <div><span className="text-sm font-semibold uppercase tracking-wider text-muted">Your next steps</span><h2 className="mt-3 text-2xl font-semibold">A little more clarity.<br />A lot less tab switching.</h2></div>
+          <div className="mt-6 divide-y divide-border">
+            {[
+              { href: "/discover", icon: Clapperboard, label: "Explore casting calls", detail: `${count} non-demo calls without a closed deadline` },
+              { href: "/agencies", icon: Building2, label: "Find representation", detail: `${agencies} agency records · list or 3D district` },
+              { href: "/tracker", icon: Bookmark, label: "Keep applications moving", detail: user ? `${applications} in your tracker` : "Save your progress when you sign in" },
+            ].map(item => <Link key={item.href} href={item.href} className="flex items-center gap-3 py-4 last:pb-0"><item.icon className="h-5 w-5 shrink-0 text-primary" /><span className="flex-1"><span className="block font-semibold">{item.label}</span><span className="mt-1 block text-sm text-muted">{item.detail}</span></span><ArrowUpRight className="h-4 w-4" /></Link>)}
           </div>
-          <Card className="p-6">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted">Example — flagged listing</p>
-            <h3 className="mt-2 font-semibold">&ldquo;Netflix Feature&rdquo; — Leads Needed, Apply Fast!!</h3>
-            <div className="mt-4 space-y-2 text-sm">
-              {[
-                ["Production company", "No identifiable company"],
-                ["Casting contact", "Free email + Telegram only"],
-                ["Submission method", "Off-platform DM"],
-                ["Compensation", "Unrealistic guaranteed pay"],
-                ["Personal info", "Home address requested up front"],
-              ].map(([k, v]) => (
-                <div key={k} className="flex items-center justify-between gap-3 border-b border-border pb-1.5">
-                  <span className="text-muted">{k}</span>
-                  <span className="inline-flex items-center gap-1 font-medium text-danger">✕ {v}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
-              Inherent risk: <strong>Critical</strong> (25/25). Requests a gift-card fee before any audition.
-            </div>
-          </Card>
-        </div>
+        </Card>
       </section>
-
-      {/* Featured opportunities */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="flex items-end justify-between">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Recently verified</h2>
-            <p className="mt-1 text-muted">A sample of opportunities that passed our checks.</p>
-          </div>
-          <Link href="/discover" className="hidden items-center gap-1 text-sm font-semibold text-primary hover:underline sm:flex">
-            See all <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {featured.map((o) => (
-            <OpportunityCard key={o.id} opp={o} />
-          ))}
-        </div>
+      <section className="mt-12 border-t border-border pt-8">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-3"><div><h2 className="text-2xl font-semibold tracking-tight">Latest casting calls</h2><p className="mt-2 text-muted">Review each source before you apply. Unknown deadlines may still be closed.</p></div><Link href="/discover" className="font-semibold text-primary">View all calls ↗</Link></div>
+        {opportunities.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{opportunities.map(opp => <OpportunityCard key={opp.id} opp={opp} />)}</div> : <Card className="p-6"><EmptyState title="No current non-demo calls in this collection" hint="Browse source websites or import a call to review and track it. Sample listings are available separately." /><div className="flex flex-wrap justify-center gap-3"><LinkButton href="/find">Browse source websites</LinkButton><LinkButton href="/discover?demo=1" variant="outline">Explore sample listings</LinkButton></div></Card>}
       </section>
-
-      {/* Agency CTA */}
-      <section className="border-t border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <h2 className="text-2xl font-bold tracking-tight">Looking for representation?</h2>
-          <p className="mx-auto mt-2 max-w-2xl text-muted">
-            Search talent agencies by region and specialty, and get match scores based on your acting resume and
-            career goals — with the same trust lens.
-          </p>
-          <LinkButton href="/agencies" className="mt-6">
-            Explore agencies <ArrowRight className="h-4 w-4" />
-          </LinkButton>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function Stat({ n, label }: { n: number; label: string }) {
-  return (
-    <div>
-      <div className="text-3xl font-extrabold tabular-nums text-primary">{n}</div>
-      <div className="mt-1 text-xs font-medium uppercase tracking-wide text-muted">{label}</div>
+      <div className="mt-8 flex items-start gap-3 rounded-xl border border-border px-5 py-4 text-sm text-muted"><ShieldCheck className="h-5 w-5 shrink-0 text-primary" /><p><strong className="text-foreground">Evidence comes first.</strong> Website checks, risk indicators, and career fit answer different questions. None guarantees a role or proves a listing is safe. <Link href="/knowledge/how-verification-works" className="text-primary underline">How checks work</Link></p></div>
     </div>
   );
 }

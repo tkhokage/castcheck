@@ -4,19 +4,19 @@
    CASTCHECK design system
    --------------------------------------------------------------------------- */
 :root {
-  --bg: #f7f8fb;
+  --bg: #f8f8f3;
   --surface: #ffffff;
-  --surface-2: #f1f3f9;
-  --border: #e2e6ef;
+  --surface-2: #f0f2e9;
+  --border: #dfe3d8;
   --border-strong: #cbd2e1;
-  --foreground: #131722;
+  --foreground: #203b33;
   --muted: #5b6478;
   --muted-2: #616a80; /* darkened for WCAG AA on light surfaces */
 
-  --primary: #3b4ee0;
-  --primary-hover: #3140c4;
+  --primary: #27564c;
+  --primary-hover: #1c443b;
   --primary-fg: #ffffff;
-  --primary-soft: #eaecfd;
+  --primary-soft: #e5f2ed;
 
   --accent: #0ea5a5;
   --accent-soft: #e0f5f4;
@@ -43,15 +43,14 @@
   --surface-2: #1c2331;
   --border: #262f42;
   --border-strong: #38445f;
-  --foreground: #e7 eaf2;
   --foreground: #e7eaf2;
   --muted: #9aa4ba;
   --muted-2: #6b7690;
 
-  --primary: #8b98f8; /* lightened for WCAG AA text on --primary-soft in dark */
-  --primary-hover: #9aa5f9;
+  --primary: #a5ead1;
+  --primary-hover: #c0f4e1;
   --primary-fg: #0b0e16;
-  --primary-soft: #1e2544;
+  --primary-soft: #183a31;
 
   --accent: #2dd4cf;
   --accent-soft: #113536;
@@ -143,3 +142,82 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 .animate-fade-up { animation: fade-up 0.4s ease both; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* The public story stays separate from the actor's working screens. */
+.actor-landing { background: #f6f5ee; color: #223e32; }
+.journey-shell { max-width: 1440px; margin: auto; position: relative; display: grid; grid-template-columns: 47% 53%; }
+.journey-visual { grid-column: 2; grid-row: 1; position: relative; }
+.journey-copy { grid-column: 1; grid-row: 1; padding-left: clamp(24px, 6vw, 100px); }
+.journey-art { position: sticky; top: 64px; height: calc(100svh - 64px); min-height: 570px; max-height: 1100px; overflow: hidden; }
+.world-stage { position: absolute; inset: 3% -5% 4%; }
+.world-poster { object-fit: contain; }
+.world-canvas { position: absolute !important; inset: 0; }
+.world-note { position: absolute; font-size: 10px; letter-spacing: .21em; font-weight: 650; z-index: 2; }
+.note-top { top: 11%; left: 26%; transform: rotate(-7deg); }
+.world-coordinate { position: absolute; right: 11%; bottom: 15%; font-size: 10px; letter-spacing: .13em; transform: rotate(-7deg); }
+.journey-orbit { position: absolute; border: 1px solid #c9d0b8; border-radius: 50%; width: 82%; aspect-ratio: 1; left: 7%; top: 15%; opacity: .55; }
+.orbit-two { transform: rotate(-28deg) scaleY(.43) scaleX(1.15); }
+.journey-controls { position: absolute; bottom: 5%; left: 9%; right: 9%; display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 11px; color: #516251; }
+.journey-controls span, .journey-controls button { display: flex; gap: 7px; align-items: center; }
+.journey-controls button { border: 1px solid #c8d1bd; padding: 10px 12px; border-radius: 30px; cursor: pointer; background: #f6f5eedd; min-height: 40px; }
+.journey-chapter { min-height: calc(100svh - 64px); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 65px 0 45px; position: relative; }
+.eyebrow { font-size: 10px; letter-spacing: .17em; font-weight: 700; display: flex; gap: 9px; align-items: center; line-height: 1.7; }
+.eyebrow > span { width: 6px; height: 6px; border-radius: 100%; background: #d6783c; }
+.journey-chapter h1 { font-size: clamp(52px, 5.9vw, 86px); font-weight: 500; letter-spacing: -.07em; line-height: 1.025; margin-top: 27px; }
+.journey-chapter h2 { font-size: clamp(39px, 4.2vw, 63px); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; margin-top: 26px; }
+.journey-chapter em { font-family: Georgia, 'Times New Roman', serif; color: #648049; font-weight: 400; letter-spacing: -.055em; }
+.chapter-description { font-size: 16px; line-height: 1.85; color: #586557; max-width: 395px; margin: 25px 0 27px; }
+.landing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 21px; }
+.landing-button { display: inline-flex; align-items: center; justify-content: center; gap: 25px; background: #274f3b; color: #fffdf3; font-size: 13px; font-weight: 600; padding: 17px 23px; border-radius: 50px; transition: background .2s, transform .2s; }
+.landing-button:hover { background: #356649; transform: translateY(-2px); }
+.landing-text-link { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; padding: 12px 0; }
+.landing-text-link:hover { text-decoration: underline; text-underline-offset: 5px; }
+.hero-footnote { display: flex; gap: 8px; align-items: center; font-size: 10px; color: #68735f; margin-top: 30px; }
+.chapter-index { width: 100%; max-width: 390px; display: flex; justify-content: space-between; gap: 16px; font-size: 9px; letter-spacing: .14em; color: #68735f; border-top: 1px solid #d7ddcc; margin-top: 55px; padding-top: 17px; }
+.landing-search { display: flex; align-items: center; background: #fffef9; border: 1px solid #d7dece; border-radius: 40px; padding: 8px 9px 8px 18px; width: 100%; max-width: 420px; }
+.landing-search label { display: flex; gap: 10px; align-items: center; flex: 1; min-width: 0; }
+.landing-search input { width: 100%; min-width: 0; background: transparent; padding: 8px 0; font-size: 13px; }
+.landing-search button { display: grid; place-items: center; background: #dfebc9; border-radius: 50%; width: 42px; height: 42px; cursor: pointer; }
+.market-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; max-width: 420px; }
+.market-links a { padding: 9px 12px; font-size: 11px; border: 1px solid #d3dbc7; border-radius: 30px; }
+.market-links a:hover { background: #e5eccf; }
+.landing-small { font-size: 11px; line-height: 1.7; color: #63705d; max-width: 380px; margin-top: 22px; }
+.evidence-note { width: 100%; max-width: 390px; border-top: 1px solid #c8d2bc; border-bottom: 1px solid #c8d2bc; padding: 23px 0; }
+.evidence-heading { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 600; }
+.evidence-note ul { margin: 18px 0; display: grid; gap: 12px; }
+.evidence-note li { display: flex; align-items: center; gap: 9px; font-size: 12px; color: #586557; }
+.evidence-note a { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+.finale-link { margin-top: 15px; }
+.landing-toolkit { background: #e9eedf; padding: 75px max(24px, calc((100vw - 1150px) / 2)); }
+.landing-toolkit h2 { font-size: clamp(28px, 3vw, 42px); letter-spacing: -.04em; margin-top: 10px; }
+.toolkit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 35px; margin-top: 42px; }
+.toolkit-grid a { position: relative; padding: 26px 35px 20px 0; border-top: 1px solid #bac6ac; }
+.toolkit-grid h3 { font-size: 16px; font-weight: 600; margin-top: 20px; }
+.toolkit-grid p { color: #586557; font-size: 13px; line-height: 1.8; margin-top: 10px; }
+.toolkit-arrow { position: absolute; right: 0; top: 29px; }
+@media (min-width: 1450px) { .world-stage { inset: 8% -5%; } }
+@media (max-width: 800px) {
+  .journey-shell { display: block; }
+  .journey-visual { position: sticky; top: 113px; height: 40svh; min-height: 230px; z-index: 2; background: #f6f5ee; }
+  .journey-art { position: relative; top: 0; height: 100%; min-height: 0; }
+  .world-stage { inset: -23% 0 -15%; }
+  .world-note { top: 8%; left: 8%; font-size: 8px; }
+  .world-coordinate, .journey-orbit { display: none; }
+  .journey-controls { bottom: 3%; left: 6%; right: 6%; font-size: 9px; }
+  .journey-controls button { background: #f6f5ee; padding: 7px 10px; }
+  .journey-copy { padding: 0 24px; }
+  .journey-chapter { min-height: 76svh; padding: 32px 0 44px; }
+  .journey-chapter h1 { font-size: clamp(47px, 11vw, 70px); margin-top: 17px; }
+  .journey-chapter h2 { font-size: clamp(37px, 9vw, 55px); }
+  .chapter-description { font-size: 14px; margin: 20px 0; }
+  .chapter-index { margin-top: 32px; }
+  .hero-footnote { margin-top: 22px; }
+  .landing-toolkit { padding: 48px 24px; }
+  .toolkit-grid { grid-template-columns: 1fr; gap: 15px; margin-top: 28px; }
+  .toolkit-grid a { padding-bottom: 20px; }
+}

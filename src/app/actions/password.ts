@@ -37,7 +37,7 @@ export async function requestPasswordReset(_prev: ResetState, formData: FormData
   await audit({ userId: user.id, action: "password.reset_requested", meta: { delivered: sent.delivered } });
 
   // Only surface the link when email isn't actually configured (dev fallback).
-  return sent.delivered ? { ok: true } : { ok: true, devLink: link };
+  return sent.delivered || process.env.NODE_ENV === "production" ? { ok: true } : { ok: true, devLink: link };
 }
 
 const resetSchema = z.object({

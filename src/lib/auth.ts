@@ -14,7 +14,7 @@ const WEAK_SECRETS = new Set([DEV_FALLBACK, "dev-only-change-me", "change-me", "
 const rawSecret = process.env.AUTH_SECRET;
 const isBuildPhase = process.env.NEXT_PHASE === "phase-production-build";
 
-if (process.env.NODE_ENV === "production" && !isBuildPhase && (!rawSecret || WEAK_SECRETS.has(rawSecret))) {
+if (process.env.NODE_ENV === "production" && !isBuildPhase && (!rawSecret || rawSecret.length < 32 || WEAK_SECRETS.has(rawSecret))) {
   throw new Error(
     "AUTH_SECRET is missing or set to a known weak value. Set a strong, unique secret before running in production:\n" +
       '  node -e "console.log(require(\'crypto\').randomBytes(48).toString(\'base64url\'))"',
@@ -65,12 +65,18 @@ export async function getSession(): Promise<SessionUser | null> {
   const token = store.get(COOKIE)?.value;
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] });
+    if (typeof payload.id !== "string") return null;
+    const user = await db.user.findUnique({
+      where: { id: payload.id },
+      select: { id: true, email: true, name: true, role: true, active: true },
+    });
+    if (!user?.active) return null;
     return {
-      id: payload.id as string,
-      email: payload.email as string,
-      name: payload.name as string,
-      role: payload.role as Role,
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role as Role,
     };
   } catch {
     return null;

@@ -1,11 +1,8 @@
 # Deployment
 
-CASTCHECK is production-ready. Local development uses SQLite; **production uses
-PostgreSQL**. Pick one of the paths below.
+CASTCHECK has deployment configuration, but production readiness must be demonstrated on the release commit. See [production goal](production-goal.md) and [current progress](production-progress.md). Local development uses SQLite; **production uses PostgreSQL**.
 
-The production build and runtime are verified: `npm run build` succeeds with
-`output: "standalone"`, and `next start` serves the app (home, discover, login,
-and `GET /api/health` → `{"status":"ok","db":"up"}`).
+Before deploying, run `npm run release:preflight` with the real host environment. It checks required configuration without printing secrets. A passing preflight does not prove service delivery or release readiness.
 
 ---
 

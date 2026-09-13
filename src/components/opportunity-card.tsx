@@ -18,6 +18,9 @@ export interface OppCardData {
   riskLevel: string;
   checks?: { status: string }[];
   fitScore?: number | null;
+  isDemo?: boolean;
+  sourceUrl?: string | null;
+  lastVerifiedAt?: Date | string | null;
 }
 
 function compLabel(c: string, pay?: string | null) {
@@ -33,8 +36,8 @@ export function OpportunityCard({ opp }: { opp: OppCardData }) {
     <Card className="group flex flex-col p-5 transition-shadow hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <span className="inline-flex w-fit items-center gap-1 rounded bg-primary-soft px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-primary">
-            <Film className="h-3 w-3" /> Casting call
+          <span className="inline-flex w-fit items-center gap-1 rounded bg-primary-soft px-1.5 py-0.5 text-xs font-bold uppercase tracking-wide text-primary">
+            <Film className="h-3 w-3" /> {opp.isDemo ? "Sample listing" : "Casting call"}
           </span>
           <span className="text-xs font-medium uppercase tracking-wide text-muted">{opp.type}</span>
         </div>
@@ -61,6 +64,10 @@ export function OpportunityCard({ opp }: { opp: OppCardData }) {
         </span>
       </div>
 
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+        {opp.sourceUrl && /^https?:\/\//i.test(opp.sourceUrl) && <a href={opp.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary underline">Original source ↗</a>}
+        <span>{opp.lastVerifiedAt ? `Checks recorded ${new Date(opp.lastVerifiedAt).toLocaleDateString("en-US", { timeZone: "UTC" })}` : "No check date recorded"}</span>
+      </div>
       <div className="mt-4 flex items-center justify-between gap-2 border-t border-border pt-3">
         <VerificationBadge state={opp.verificationState} />
         <div className="flex items-center gap-3 text-xs text-muted">

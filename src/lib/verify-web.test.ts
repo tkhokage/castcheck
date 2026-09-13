@@ -1,20 +1,18 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { verifyWebsite } from "./verify-web";
+import { fetchPublicPage } from "./public-web";
+vi.mock("./public-web", () => ({ fetchPublicPage: vi.fn() }));
 
 function mockFetch(status: number, finalUrl: string, body: string) {
-  vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
-    status,
-    url: finalUrl,
-    text: () => Promise.resolve(body),
-  }));
+  vi.mocked(fetchPublicPage).mockResolvedValue({ status, finalUrl, text: body });
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => vi.resetAllMocks());
 
 describe("verifyWebsite", () => {
-  it("fails when no URL is provided (network never touched)", async () => {
+  it("is inconclusive when no URL is provided (network never touched)", async () => {
     const r = await verifyWebsite({ url: null, contactEmail: "x@y.com" });
-    expect(r.verdict).toBe("fail");
+    expect(r.verdict).toBe("warn");
     expect(r.reachable).toBe(false);
     expect(r.normalizedUrl).toBeNull();
   });
@@ -42,17 +40,23 @@ describe("verifyWebsite", () => {
     expect(r.verdict).toBe("pass");
   });
 
-  it("fails when the server returns an error status", async () => {
+  it("is inconclusive when the server returns an error status", async () => {
     mockFetch(503, "https://down.example/", "");
     const r = await verifyWebsite({ url: "down.example" });
     expect(r.reachable).toBe(false);
-    expect(r.verdict).toBe("fail");
+    expect(r.verdict).toBe("warn");
   });
 
-  it("fails when the fetch throws (unreachable)", async () => {
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("ENOTFOUND")));
+  it("is inconclusive when the fetch throws (unreachable)", async () => {
+    vi.mocked(fetchPublicPage).mockRejectedValue(new Error("ENOTFOUND"));
     const r = await verifyWebsite({ url: "nope.example" });
     expect(r.reachable).toBe(false);
-    expect(r.verdict).toBe("fail");
+    expect(r.verdict).toBe("warn");
   });
+});
+
+it("does not match unrelated co.uk domains", async () => {
+  mockFetch(200, "https://casting.co.uk", "Casting");
+  const result = await verifyWebsite({ url: "https://casting.co.uk", contactEmail: "x@unrelated.co.uk" });
+  expect(result.domainMatch).toBe("mismatch");
 });

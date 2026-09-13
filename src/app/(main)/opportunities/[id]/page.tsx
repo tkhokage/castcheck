@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth";
-import { isStaff } from "@/lib/rbac";
+import { canReadOpportunity } from "@/lib/opportunity-access";
 import { Card, Badge } from "@/components/ui";
 import { VerificationBadge, RiskBadge, TrustLevelBadge } from "@/components/badges";
 import { SaveButton, TrackButton, ReportDialog } from "@/components/opportunity-actions";
@@ -35,11 +35,9 @@ export default async function OpportunityDetail({ params, searchParams }: PagePr
   });
   if (!opp) notFound();
 
-  // Imported listings are private to the person who imported them (staff can also see).
-  if (opp.status === "imported" && opp.createdById !== user?.id && !isStaff(user?.role)) {
-    notFound();
-  }
+  if (!canReadOpportunity(opp, user)) notFound();
 
+  const sourceEvidence = opp.sourceEvidence as { fetchedAt?: string; extraction?: string } | null;
   const profile = user?.profile ?? null;
   const fit = profile
     ? careerFit(profile, {
@@ -67,6 +65,7 @@ export default async function OpportunityDetail({ params, searchParams }: PagePr
         <ArrowLeft className="h-4 w-4" /> Back to Discover
       </Link>
 
+      {opp.isDemo && <p className="mb-6 rounded-lg bg-warning-soft p-4 text-warning">Sample listing. This is not a real audition.</p>}
       {posted && (
         <SuccessBanner>
           <strong>Listing submitted.</strong> It&rsquo;s been auto-screened and will be reviewed by a moderator
@@ -260,12 +259,13 @@ export default async function OpportunityDetail({ params, searchParams }: PagePr
           <Card className="p-5 text-sm">
             <h2 className="font-semibold">Source & contact</h2>
             <p className="mt-2 text-muted">Source: {opp.source ?? "—"}</p>
-            <p className="text-muted">Last verified: {monthYear(opp.lastVerifiedAt)}</p>
+            <p className="text-muted">Checks recorded: {monthYear(opp.lastVerifiedAt)}</p>
 
+            {sourceEvidence?.fetchedAt && <p className="mt-2 text-muted">Source read {formatDate(sourceEvidence.fetchedAt)}. {sourceEvidence.extraction === "structured" ? "Structured listing fields" : "Page metadata"}; reviewed details may have been edited. Retrieval is not verification.</p>}
             <div className="mt-3 space-y-1.5 border-t border-border pt-3">
-              {opp.sourceUrl ? (
+              {opp.sourceUrl && /^https?:\/\//i.test(opp.sourceUrl) ? (
                 <a href={opp.sourceUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 font-medium text-primary hover:underline">
-                  <Globe className="h-4 w-4 shrink-0" /> Official website
+                  <Globe className="h-4 w-4 shrink-0" /> Original source
                 </a>
               ) : (
                 <p className="flex items-center gap-2 text-muted"><Globe className="h-4 w-4 shrink-0" /> No website listed</p>

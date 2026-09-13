@@ -17,7 +17,12 @@ export default async function DiscoverPage({
   const sp = await searchParams;
   const user = await getCurrentUser();
 
-  const where: Prisma.OpportunityWhereInput = { status: { in: ["published", "flagged"] } };
+  const page = Math.min(10000, Math.max(1, Number.parseInt(sp.page || "1", 10) || 1));
+  const where: Prisma.OpportunityWhereInput = {
+    status: { in: ["published", "flagged"] },
+    isDemo: sp.demo === "1",
+    ...(sp.expired === "1" ? {} : { AND: [{ OR: [{ deadline: null }, { deadline: { gte: new Date() } }] }] }),
+  };
   if (sp.type) where.type = sp.type;
   if (sp.location) where.location = sp.location;
   if (sp.compensation) where.compensation = sp.compensation;
@@ -34,11 +39,18 @@ export default async function DiscoverPage({
     ];
   }
 
-  const opps = await db.opportunity.findMany({
+  const [opps, total] = await Promise.all([db.opportunity.findMany({
     where,
     include: { checks: { select: { status: true } } },
-    orderBy: [{ verificationState: "asc" }, { lastVerifiedAt: "desc" }],
-  });
+    orderBy: sp.sort === "deadline" ? [{ deadline: "asc" }, { id: "asc" }] : [{ createdAt: "desc" }, { id: "asc" }],
+    take: 24,
+    skip: (page - 1) * 24,
+  }), db.opportunity.count({ where })]);
+  function pageHref(target: number) {
+    const params = new URLSearchParams(Object.entries(sp).filter((entry): entry is [string, string] => typeof entry[1] === "string"));
+    params.set("page", String(target));
+    return `/discover?${params}`;
+  }
 
   const profile = user?.profile ?? null;
 
@@ -49,14 +61,14 @@ export default async function DiscoverPage({
           <span className="inline-flex items-center gap-1 rounded bg-primary-soft px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-primary">Casting calls</span>
           <h1 className="mt-1.5 text-3xl font-extrabold tracking-tight">Casting calls</h1>
           <p className="mt-1 text-muted">
-            {opps.length} call{opps.length === 1 ? "" : "s"} · filtered against evidence, ranked by verification.
+            {total} {sp.demo === "1" ? "sample" : "non-demo"} call{total === 1 ? "" : "s"} · review source evidence before applying.
             Looking for representation instead? <Link href="/agencies" className="font-medium text-primary hover:underline">Browse agencies</Link>.
           </p>
         </div>
         <Link href="/find" className="text-sm font-semibold text-primary hover:underline">+ Find calls on other sites</Link>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[320px_1fr]">
+      <div className="grid gap-8 lg:grid-cols-[270px_1fr]">
         <aside className="lg:sticky lg:top-20 lg:self-start">
           <Card className="p-5">
             <h2 className="mb-4 font-semibold">Filters</h2>
@@ -70,7 +82,8 @@ export default async function DiscoverPage({
           )}
         </aside>
 
-        <section>
+        <section aria-label="Casting results">
+          {sp.demo === "1" && <p className="mb-4 rounded-lg bg-warning-soft p-4 text-sm text-warning">You are viewing fictional sample listings. They are not real auditions.</p>}
           {opps.length === 0 ? (
             <EmptyState title="No opportunities match your filters" hint="Try clearing a filter or widening your search." />
           ) : (
@@ -86,6 +99,11 @@ export default async function DiscoverPage({
               })}
             </div>
           )}
+          {total > 24 && <nav aria-label="Results pages" className="mt-6 flex items-center justify-between gap-3">
+            {page > 1 ? <Link href={pageHref(page - 1)} className="font-semibold text-primary">Previous</Link> : <span />}
+            <span className="text-sm text-muted">Page {page} of {Math.ceil(total / 24)}</span>
+            {page * 24 < total ? <Link href={pageHref(page + 1)} className="font-semibold text-primary">Next</Link> : <span />}
+          </nav>}
         </section>
       </div>
     </div>
