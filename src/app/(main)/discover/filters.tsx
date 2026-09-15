@@ -24,6 +24,7 @@ export function DiscoverFilters() {
 
   function setParam(key: string, value: string) {
     const next = new URLSearchParams(params.toString());
+    next.delete("page");
     if (value) next.set(key, value);
     else next.delete(key);
     startTransition(() => router.push(`/discover?${next.toString()}`));
@@ -33,21 +34,23 @@ export function DiscoverFilters() {
 
   return (
     <div className={pending ? "opacity-60 transition-opacity" : "transition-opacity"}>
-      <div className="relative">
+      <form className="relative" onSubmit={e => { e.preventDefault(); const data = new FormData(e.currentTarget); setParam("q", String(data.get("q") || "")); }}>
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
         <input
+          key={params.get("q") ?? ""}
+          name="q"
           defaultValue={params.get("q") ?? ""}
-          onChange={(e) => setParam("q", e.target.value)}
           aria-label="Search casting calls by title, role, production, or company"
           placeholder="Search title, role, production, company…"
           className={`${inputClass} pl-9`}
         />
-      </div>
+        <button type="submit" className="mt-2 text-sm font-semibold text-primary">Search calls</button>
+      </form>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid grid-cols-2 gap-3">
         {SELECTS.map((s) => (
           <label key={s.name} className="block">
-            <span className="mb-1 block text-xs font-medium text-muted">{s.label}</span>
+            <span className="mb-1 block text-sm font-medium text-muted">{s.label}</span>
             <select
               value={params.get(s.name) ?? ""}
               onChange={(e) => setParam(s.name, e.target.value)}
@@ -64,7 +67,10 @@ export function DiscoverFilters() {
         ))}
       </div>
 
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <label className="mt-4 block text-sm font-medium">Sort by<select value={params.get("sort") || "newest"} onChange={e => setParam("sort", e.target.value)} className={`${inputClass} mt-1`}><option value="newest">Newest added</option><option value="deadline">Deadline</option></select></label>
+      <div className="mt-4 space-y-3">
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={params.get("demo") === "1"} onChange={e => setParam("demo", e.target.checked ? "1" : "")} />Show sample listings instead</label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={params.get("expired") === "1"} onChange={e => setParam("expired", e.target.checked ? "1" : "")} />Include past deadlines</label>
         <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"

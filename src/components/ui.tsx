@@ -41,7 +41,7 @@ export function Card({
 }: {
   children: ReactNode;
   className?: string;
-  as?: React.ElementType;
+  as?: React.ElementType<{ className?: string; children?: ReactNode }>;
 }) {
   return (
     <As

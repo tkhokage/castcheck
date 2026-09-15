@@ -59,7 +59,7 @@ export async function register(_prev: AuthState, formData: FormData): Promise<Au
   // Fire off a verification email (no-op-safe when no provider is configured).
   await sendVerification(user.email, `${await baseUrl()}/verify?token=${verifyToken}`);
   await createSession({ id: user.id, email: user.email, name: user.name, role: user.role as never });
-  redirect(role === "actor" ? "/profile" : "/dashboard");
+  redirect(role === "actor" ? "/profile" : "/opportunities/new");
 }
 
 const loginSchema = z.object({

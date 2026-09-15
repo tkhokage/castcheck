@@ -5,12 +5,16 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 import { audit } from "@/lib/audit";
+import { canReadOpportunity } from "@/lib/opportunity-access";
+import { APPLICATION_STATUSES } from "@/lib/constants";
 import { rateLimit } from "@/lib/rate-limit";
 
 export async function toggleSave(opportunityId: string) {
   const session = await getSession();
   if (!session) return { error: "Sign in to save opportunities." };
 
+  const opp = await db.opportunity.findUnique({ where: { id: opportunityId } });
+  if (!canReadOpportunity(opp, session)) return { error: "Listing not found." };
   const existing = await db.savedOpportunity.findUnique({
     where: { userId_opportunityId: { userId: session.id, opportunityId } },
   });
@@ -31,6 +35,8 @@ export async function startApplication(opportunityId: string, status = "planning
   if (!session) return { error: "Sign in to track applications." };
 
   const opp = await db.opportunity.findUnique({ where: { id: opportunityId } });
+  if (!canReadOpportunity(opp, session)) return { error: "Listing not found." };
+  if (!(APPLICATION_STATUSES as readonly string[]).includes(status)) return { error: "Invalid application status." };
   await db.application.upsert({
     where: { userId_opportunityId: { userId: session.id, opportunityId } },
     create: { userId: session.id, opportunityId, status, deadline: opp?.deadline ?? null },
@@ -44,7 +50,7 @@ export async function startApplication(opportunityId: string, status = "planning
 
 const updateSchema = z.object({
   id: z.string(),
-  status: z.string().optional(),
+  status: z.enum(APPLICATION_STATUSES).optional(),
   notes: z.string().optional(),
   followUpDate: z.string().optional(),
   auditionDate: z.string().optional(),
@@ -106,6 +112,9 @@ export async function submitReport(_prev: unknown, formData: FormData) {
 
   const limit = await rateLimit(`report:${session?.id ?? parsed.data.opportunityId}`, 10, 60 * 60_000);
   if (!limit.ok) return { error: `Too many reports. Try again in ${limit.retryAfterSec}s.` };
+
+  const opp = await db.opportunity.findUnique({ where: { id: parsed.data.opportunityId } });
+  if (!canReadOpportunity(opp, session)) return { error: "Listing not found." };
 
   await db.report.create({
     data: {

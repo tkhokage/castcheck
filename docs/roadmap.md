@@ -79,3 +79,6 @@ have to do extra work. Live status tracked in `AGENTS.md`.
 - **G9 🔶** Deploy config ready (one-step `vercel-build`, updated post-deploy
   checklist). The live deploy itself needs the operator's Vercel + Postgres +
   email credentials.
+
+## Optional agency exploration
+Agency District baseline and first primitive 3D prototype implemented on an isolated feature branch; not merged or deployed. Same filters and matching, list fallback, 24-result limit. See [agency-district.md](agency-district.md). Blender art, AI filter assistance and actor usability study remain later milestones.

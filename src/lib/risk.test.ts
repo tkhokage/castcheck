@@ -22,6 +22,14 @@ describe("riskLevel", () => {
 });
 
 describe("deriveVerificationState", () => {
+  it("needs review when no verification checks exist", () => {
+    expect(deriveVerificationState([])).toEqual({ state: "needs_review", passed: 0, total: 0 });
+  });
+
+  it("preserves high-risk evidence when no formal checks exist", () => {
+    expect(deriveVerificationState([], true)).toEqual({ state: "high_risk", passed: 0, total: 0 });
+  });
+
   it("is verified only when every check passes", () => {
     const checks = [{ status: "pass" }, { status: "pass" }, { status: "pass" }];
     expect(deriveVerificationState(checks).state).toBe("verified");

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { can } from "@/lib/rbac";
 import { db } from "@/lib/db";
-import { Card, Badge, Stat, EmptyState } from "@/components/ui";
+import { Card, Stat, EmptyState } from "@/components/ui";
 import { PriorityBadge, TicketStatusBadge } from "@/components/ticket-badges";
 import { formatDate } from "@/lib/utils";
 

@@ -50,10 +50,14 @@ function getRedis(): Redis | null {
 
 async function redisLimit(r: Redis, key: string, limit: number, windowMs: number): Promise<RateLimitResult> {
   const rk = `rl:${key}`;
-  const count = await r.incr(rk);
-  if (count === 1) await r.pexpire(rk, windowMs);
+  const [count, ttl] = await r.eval<[number], [number, number]>(`
+    local count = redis.call('INCR', KEYS[1])
+    if count == 1 or redis.call('PTTL', KEYS[1]) < 0 then
+      redis.call('PEXPIRE', KEYS[1], ARGV[1])
+    end
+    return {count, redis.call('PTTL', KEYS[1])}
+  `, [rk], [windowMs]);
   if (count > limit) {
-    const ttl = await r.pttl(rk);
     return { ok: false, remaining: 0, retryAfterSec: Math.max(1, Math.ceil((ttl > 0 ? ttl : windowMs) / 1000)) };
   }
   return { ok: true, remaining: Math.max(0, limit - count), retryAfterSec: 0 };
@@ -66,8 +70,9 @@ export async function rateLimit(key: string, limit = 5, windowMs = 60_000): Prom
     try {
       return await redisLimit(r, key, limit, windowMs);
     } catch (e) {
-      console.error("[rate-limit] redis error, falling back to memory", e);
+      console.error("[rate-limit] shared limiter unavailable", e instanceof Error ? e.name : "unknown");
     }
   }
+  if (process.env.NODE_ENV === "production") return { ok: false, remaining: 0, retryAfterSec: 60 };
   return memoryLimit(key, limit, windowMs);
 }

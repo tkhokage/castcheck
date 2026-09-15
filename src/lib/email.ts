@@ -25,6 +25,7 @@ export async function sendEmail(params: {
 }): Promise<SendResult> {
   const key = process.env.EMAIL_PROVIDER_API_KEY;
   if (!key) {
+    if (process.env.NODE_ENV === "production") return { delivered: false, error: "Email is not configured" };
     console.log(`[email:fallback] To: ${params.to}\nSubject: ${params.subject}\n${params.text}\n`);
     return { delivered: false };
   }
@@ -33,9 +34,10 @@ export async function sendEmail(params: {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from: FROM, to: params.to, subject: params.subject, html: params.html, text: params.text }),
+      signal: AbortSignal.timeout(8000),
     });
     if (!res.ok) {
-      console.error("[email] provider rejected send", res.status, await res.text());
+      console.error("[email] provider rejected send", res.status);
       return { delivered: false, error: `provider ${res.status}` };
     }
     return { delivered: true };
@@ -48,6 +50,7 @@ export async function sendEmail(params: {
 /** Absolute base URL for links in emails (from the incoming request, or APP_URL). */
 export async function baseUrl(): Promise<string> {
   if (process.env.APP_URL) return process.env.APP_URL.replace(/\/$/, "");
+  if (process.env.NODE_ENV === "production") throw new Error("APP_URL must be configured for production email links");
   try {
     const h = await headers();
     const host = h.get("x-forwarded-host") ?? h.get("host");

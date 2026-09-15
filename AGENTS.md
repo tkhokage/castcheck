@@ -36,3 +36,6 @@ dashboard, program roadmap, retrospectives, GitHub-project setup, and the
 recruiter-facing `docs/pm-case-study.md`). Everything is grounded in the real
 build; keep the docs in sync when the code changes. Resolved issue I-01
 (MFA-ready vs shipped TOTP MFA) → docs now state the implemented control.
+
+## Agency District preview
+Milestones 1–2 implemented on codex/agency-district-prototype; local validation only. See docs/agency-district.md for evidence and remaining checks. Blender and AI-filter milestones are not implemented.

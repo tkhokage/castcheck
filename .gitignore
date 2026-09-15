@@ -48,3 +48,6 @@ prisma/*.db-journal
 
 # user-uploaded media (local storage)
 /public/uploads/
+
+# Local browser-check evidence
+/artifacts/

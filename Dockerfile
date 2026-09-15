@@ -9,7 +9,7 @@ WORKDIR /app
 # ---- Dependencies -----------------------------------------------------------
 FROM base AS deps
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 
 # ---- Builder ----------------------------------------------------------------
 FROM base AS builder
@@ -19,6 +19,8 @@ COPY . .
 RUN node scripts/set-db-provider.mjs postgresql && npx prisma generate
 # DATABASE_URL is not needed to build; a placeholder keeps env validation happy.
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_CONTACT_EMAIL
+ARG NEXT_PUBLIC_SECURITY_EMAIL
 RUN npm run build
 
 # ---- Migrator (used by docker-compose to apply migrations) ------------------
